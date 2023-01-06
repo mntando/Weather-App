@@ -104,8 +104,8 @@ async function display() {
 
 	// Display discription
 	let _weather_icon = document.getElementById('weather_icon');
-	// http://openweathermap.org/img/wn/10d@2x.png
-	_weather_icon.setAttribute('src' , 'http://openweathermap.org/img/wn/' + weather.weather[0].icon + '@2x.png')
+	// https://openweathermap.org/img/wn/10d@2x.png
+	_weather_icon.setAttribute('src' , 'https://openweathermap.org/img/wn/' + weather.weather[0].icon + '@2x.png')
 	_weather_icon.setAttribute('alt', 'weather_icon');
 	document.getElementById('description').innerHTML = capitalize(weather.weather[0].description.toString());
 
