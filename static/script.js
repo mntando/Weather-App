@@ -152,7 +152,7 @@ async function display() {
 
 			html += '<div class="forcast">';
 			html += '<div class="time">' + time + '</div>';
-			html += '<div class="icon"><img src="http://openweathermap.org/img/wn/' + icon + '@2x.png" alt="weather_icon"></div>';
+			html += '<div class="icon"><img src="https://openweathermap.org/img/wn/' + icon + '@2x.png" alt="weather_icon"></div>';
 			html += '<div class="temp">' + parseInt(temp) + degree + '</div>';
 			html += '<div class="rain">' + svg + ' ' + parseInt(rain) + '%</div>';
 			html += '</div>';
