@@ -90,12 +90,10 @@ async function display() {
 		if (hour < 0) {
 			date = d.getUTCDate() - 1;
 			day = days[d.getUTCDay() - 1].substr(0, 3);
-			month = months[d.getUTCMonth() - 1].substr(0, 3);
 		}
 		else if (hour > 23) {
 			date = d.getUTCDate() + 1;
 			day = days[d.getUTCDay() + 1].substr(0, 3);
-			month = months[d.getUTCMonth() + 1].substr(0, 3);
 		}
 		document.getElementById('date').innerHTML =
 		day + ', ' + ('0' + date).substr(-2) + ' ' + month + ' ' + ('0' + hour).substr(-2) + ':' + ('0' + minutes).substr(-2);
