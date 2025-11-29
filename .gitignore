@@ -160,3 +160,7 @@ Thumbs.db
 # Database
 cities.db
 *.db
+
+# Production files
+run.py
+project.txt
