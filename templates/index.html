@@ -1,111 +1,299 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Home
-{% endblock %}
+{% block title %}Weather{% endblock %}
 
 {% block main %}
-    <div class="row rounded-corners">
-        <div class="col mb pb text-start">
-            <div>
-                <h5>
-                    <span id="location">{{ location }}</span>
-                    <span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
-                        </svg>
-                    </span>
-                </h5>
-            </div>
-            <h1>
-                <span id="temp"></span><span>&#xb0;</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-thermometer-half" viewBox="0 0 20 20">
-                    <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415z"/>
-                    <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0V2.5zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1z"/>
-                </svg>
-            </h1>
-            <p><span id="range">Loading...</span></p>
-            <p><span id="date"></span></p>
-        </div>
-        <div class="col pb text-start">
-            <p>
-                <img id="weather_icon">
-            </p>
-            <p class="pl">
-                <span id="description"></span>
-            </p>
-        </div>
+<div class="w-full p-8 flex items-center justify-between">
+    <div>
+        <h1 id="location" class="text-3xl font-bold text-white">{{ location }}</h1>
+        <p id="description" class="text-gray-400"></p>
+        <p id="temp" class="text-5xl font-semibold text-white mt-8"></p>
     </div>
-    <div class="bg-info bg-gradient bg-opacity-10 grid mb pb rounded-corners row text-center">
-        <div class="col">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-wind" viewBox="0 0 20 20">
-                <path d="M12.5 2A2.5 2.5 0 0 0 10 4.5a.5.5 0 0 1-1 0A3.5 3.5 0 1 1 12.5 8H.5a.5.5 0 0 1 0-1h12a2.5 2.5 0 0 0 0-5zm-7 1a1 1 0 0 0-1 1 .5.5 0 0 1-1 0 2 2 0 1 1 2 2h-5a.5.5 0 0 1 0-1h5a1 1 0 0 0 0-2zM0 9.5A.5.5 0 0 1 .5 9h10.042a3 3 0 1 1-3 3 .5.5 0 0 1 1 0 2 2 0 1 0 2-2H.5a.5.5 0 0 1-.5-.5z"/>
-            </svg>
-            <p>
-                <span>Wind: </span>
-            </p>
-            <p>
-                <span id="wind"></span>
-            </p>
-        </div>
-        <div class="col">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-moisture" viewBox="0 0 20 20">
-                <path d="M13.5 0a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V7.5h-1.5a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V15h-1.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 .5-.5V.5a.5.5 0 0 0-.5-.5h-2zM7 1.5l.364-.343a.5.5 0 0 0-.728 0l-.002.002-.006.007-.022.023-.08.088a28.458 28.458 0 0 0-1.274 1.517c-.769.983-1.714 2.325-2.385 3.727C2.368 7.564 2 8.682 2 9.733 2 12.614 4.212 15 7 15s5-2.386 5-5.267c0-1.05-.368-2.169-.867-3.212-.671-1.402-1.616-2.744-2.385-3.727a28.458 28.458 0 0 0-1.354-1.605l-.022-.023-.006-.007-.002-.001L7 1.5zm0 0-.364-.343L7 1.5zm-.016.766L7 2.247l.016.019c.24.274.572.667.944 1.144.611.781 1.32 1.776 1.901 2.827H4.14c.58-1.051 1.29-2.046 1.9-2.827.373-.477.706-.87.945-1.144zM3 9.733c0-.755.244-1.612.638-2.496h6.724c.395.884.638 1.741.638 2.496C11 12.117 9.182 14 7 14s-4-1.883-4-4.267z"/>
-            </svg>
-            <p>
-                <span>Humidity: </span>
-            </p>
-            <p>
-                <span id="humidity"></span>
-            </p>
-        </div>
-        <div class="col">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-down-square" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.5 2.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"/>
-              </svg>
-              <p>
-                <span>Pressure: </span>
-            </p>
-            <p>
-                <span id="pressure"></span>
-            </p>
-        </div>
-        <div class="col">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-eyeglasses" viewBox="0 0 20 20">
-                <path d="M4 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm2.625.547a3 3 0 0 0-5.584.953H.5a.5.5 0 0 0 0 1h.541A3 3 0 0 0 7 8a1 1 0 0 1 2 0 3 3 0 0 0 5.959.5h.541a.5.5 0 0 0 0-1h-.541a3 3 0 0 0-5.584-.953A1.993 1.993 0 0 0 8 6c-.532 0-1.016.208-1.375.547zM14 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-            </svg>
-            <p>
-                <span>Visibility: </span>
-            </p>
-            <p>
-                <span id="visibility"></span>
-            </p>
-        </div>
-    </div>
-    <div class="bg-info bg-gradient bg-opacity-10 flex-container grid mb pb rounded-corners row text-center" id="forcast">
-        ...
-    </div>
-    <div class="bg-info bg-gradient bg-opacity-10 grid mb pb rounded-corners row text-center">
-        <div class="col">
-            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-sunrise-fill" viewBox="0 0 20 20">
-                <path d="M7.646 1.146a.5.5 0 0 1 .708 0l1.5 1.5a.5.5 0 0 1-.708.708L8.5 2.707V4.5a.5.5 0 0 1-1 0V2.707l-.646.647a.5.5 0 1 1-.708-.708l1.5-1.5zM2.343 4.343a.5.5 0 0 1 .707 0l1.414 1.414a.5.5 0 0 1-.707.707L2.343 5.05a.5.5 0 0 1 0-.707zm11.314 0a.5.5 0 0 1 0 .707l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zM11.709 11.5a4 4 0 1 0-7.418 0H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-3.79zM0 10a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 0 10zm13 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
-            </svg>
-            <p>
-                Sunrise: <span id="sunrise"></span>
-            </p>
-        </div>
-        <div class="col">
-            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-sunset-fill" viewBox="0 0 20 20">
-                <path d="M7.646 4.854a.5.5 0 0 0 .708 0l1.5-1.5a.5.5 0 0 0-.708-.708l-.646.647V1.5a.5.5 0 0 0-1 0v1.793l-.646-.647a.5.5 0 1 0-.708.708l1.5 1.5zm-5.303-.51a.5.5 0 0 1 .707 0l1.414 1.413a.5.5 0 0 1-.707.707L2.343 5.05a.5.5 0 0 1 0-.707zm11.314 0a.5.5 0 0 1 0 .706l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zM11.709 11.5a4 4 0 1 0-7.418 0H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-3.79zM0 10a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 0 10zm13 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
-            </svg>
-            <p>
-                Sunset: <span id="sunset"></span>
-            </p>
-        </div>
-    </div>
-    <div class="text-start" id="timestamp"></div>
-    <script type="text/javascript" language="JavaScript">
-        display();
-    </script>
 
+    <!-- TODO: Remove these from scripts.js -->
+    <span id="range" class="hidden"></span>
+    <span id="date" class="hidden"></span>
+
+    <img id="weather_icon" alt="weather icon" class="size-40">
+</div>
+
+<!-- TODO: edit on scipts.js -->
+<div id="forecast" class="hidden"></div>
+
+<!-- Forecast -->
+<div class="flex-1 w-full bg-[#171f2c] rounded-2xl p-6">
+
+  <h2 class="text-gray-400 text-xs font-semibold mb-4">
+    TODAY'S FORECAST
+  </h2>
+
+  <div class="flex items-center overflow-x-auto scrollbar-hide font-semibold">
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">6:00 AM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">25°</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">12:00 PM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">33°</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">32°</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">6:00 AM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">25°</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">12:00 PM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">33°</p>
+    </div>
+    
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">
+        <span><span id="sunrise"></span> AM</span>
+      </p>
+      <svg class="flex px-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l1.5 1.5a.5.5 0 0 1-.708.708L8.5 2.707V4.5a.5.5 0 0 1-1 0V2.707l-.646.647a.5.5 0 1 1-.708-.708zM2.343 4.343a.5.5 0 0 1 .707 0l1.414 1.414a.5.5 0 0 1-.707.707L2.343 5.05a.5.5 0 0 1 0-.707m11.314 0a.5.5 0 0 1 0 .707l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0M11.709 11.5a4 4 0 1 0-7.418 0H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-3.79zM0 10a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 0 10m13 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
+      </svg>
+      <p class="text-white text-sm font-semibold">Sunrise</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">32°</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">6:00 AM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">25°</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">12:00 PM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">33°</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">32°</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">32°</p>
+    </div>
+    
+    <div class="flex flex-col items-center min-w-[100px] border-r border-gray-600/40">
+      <p class="text-gray-400 text-xs mb-3">
+        <span><span id="sunset"></span> PM</span>
+      </p>
+      <svg class="flex px-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M7.646 4.854a.5.5 0 0 0 .708 0l1.5-1.5a.5.5 0 0 0-.708-.708l-.646.647V1.5a.5.5 0 0 0-1 0v1.793l-.646-.647a.5.5 0 1 0-.708.708zm-5.303-.51a.5.5 0 0 1 .707 0l1.414 1.413a.5.5 0 0 1-.707.707L2.343 5.05a.5.5 0 0 1 0-.707zm11.314 0a.5.5 0 0 1 0 .706l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zM11.709 11.5a4 4 0 1 0-7.418 0H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-3.79zM0 10a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 0 10m13 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
+      </svg>
+      <p class="text-white text-sm font-semibold">Sunset</p>
+    </div>
+
+    <div class="flex flex-col items-center min-w-[100px]">
+      <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
+      <img src="/static/weather.webp" class="w-10 h-10 mb-3">
+      <p class="text-white text-lg font-semibold">32°</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- Air condition -->
+<div class="flex-1 w-full bg-[#171f2c] text-white rounded-2xl p-6 mt-8">
+  <div class="flex items-center justify-between mb-6">
+    <h3 class="text-xs font-semibold text-gray-400">
+      AIR CONDITIONS
+    </h3>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 text-gray-400 gap-6">
+    
+    <div class="flex flex-col gap-1 text-center">
+      <div class="flex gap-2">
+        <p class="text-sm font-semibold">Wind</p>
+        <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+          <path fill="currentColor" d="M10.5 7.5H4v-1h6.5a1.5 1.5 0 1 0 -1.5 -1.5h-1a2.5 2.5 0 1 1 2.5 2.5Z" fill="#000000" stroke-width="0.5"></path>
+          <path fill="currentColor" d="M11.5 14a2.50285 2.50285 0 0 1 -2.5 -2.5h1a1.5 1.5 0 1 0 1.5 -1.5H2v-1h9.5a2.5 2.5 0 0 1 0 5Z" fill="#000000" stroke-width="0.5"></path>
+        </svg>
+      </div>
+      <p id="wind" class="text-xl font-semibold text-gray-300 text-start"></p>
+    </div>
+
+    <div class="flex flex-col gap-1 text-center">
+      <div class="flex gap-2">
+        <p class="text-sm font-semibold">Humidity</p>
+        <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+          <path fill="currentColor" d="M11.73805 6.9966 8.4236 1.71825a0.52 0.52 0 0 0 -0.8472 0L4.24705 7.0222A4.99305 4.99305 0 0 0 3.5 9.5a4.5 4.5 0 0 0 9 0 5.0316 5.0316 0 0 0 -0.76195 -2.5034ZM8 13.00025a3.50445 3.50445 0 0 1 -3.5 -3.5 3.989 3.989 0 0 1 0.60915 -1.9719l0.4675 -0.7444 5.0369 5.0366A3.4886 3.4886 0 0 1 8 13.00025Z" fill="#000000" stroke-width="0.5"></path>
+        </svg>
+      </div>
+      <p id="humidity" class="text-xl font-semibold text-gray-300 text-start"></p>
+    </div>
+
+    <div class="flex flex-col gap-1 text-center">
+      <div class="flex gap-2">
+        <p class="text-sm font-semibold">Pressure</p>
+        <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      </div>
+      <p id="pressure" class="text-xl font-semibold text-gray-300 text-start"></p>
+    </div>
+
+    <div class="flex flex-col gap-1 text-center">
+      <div class="flex gap-2">
+        <p class="text-sm font-semibold">Visibility</p>
+        <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M3.025 14.475c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Zm0 -3.9c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Zm2.97775 8.375c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275Zm0 -4.05c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275Zm0 -3.9c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275Zm0 -4.05c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275ZM10.05 15.3c-0.375 0 -0.69375 -0.13125 -0.95625 -0.39375 -0.2625 -0.2625 -0.39375 -0.58125 -0.39375 -0.95625s0.13125 -0.69375 0.39375 -0.95625c0.2625 -0.2625 0.58125 -0.39375 0.95625 -0.39375s0.69375 0.13125 0.95625 0.39375c0.2625 0.2625 0.39375 0.58125 0.39375 0.95625s-0.13125 0.69375 -0.39375 0.95625c-0.2625 0.2625 -0.58125 0.39375 -0.95625 0.39375Zm0 -3.9c-0.375 0 -0.69375 -0.13125 -0.95625 -0.39375 -0.2625 -0.2625 -0.39375 -0.58125 -0.39375 -0.95625s0.13125 -0.69375 0.39375 -0.95625c0.2625 -0.2625 0.58125 -0.39375 0.95625 -0.39375s0.69375 0.13125 0.95625 0.39375c0.2625 0.2625 0.39375 0.58125 0.39375 0.95625s-0.13125 0.69375 -0.39375 0.95625c-0.2625 0.2625 -0.58125 0.39375 -0.95625 0.39375Zm0.00275 7.55c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275Zm0 -12c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275ZM10.05 21.5c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Zm0 -17.95c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Zm3.9 11.75c-0.375 0 -0.69375 -0.13125 -0.95625 -0.39375 -0.2625 -0.2625 -0.39375 -0.58125 -0.39375 -0.95625s0.13125 -0.69375 0.39375 -0.95625c0.2625 -0.2625 0.58125 -0.39375 0.95625 -0.39375s0.69375 0.13125 0.95625 0.39375c0.2625 0.2625 0.39375 0.58125 0.39375 0.95625s-0.13125 0.69375 -0.39375 0.95625c-0.2625 0.2625 -0.58125 0.39375 -0.95625 0.39375Zm0 -3.9c-0.375 0 -0.69375 -0.13125 -0.95625 -0.39375 -0.2625 -0.2625 -0.39375 -0.58125 -0.39375 -0.95625s0.13125 -0.69375 0.39375 -0.95625c0.2625 -0.2625 0.58125 -0.39375 0.95625 -0.39375s0.69375 0.13125 0.95625 0.39375c0.2625 0.2625 0.39375 0.58125 0.39375 0.95625s-0.13125 0.69375 -0.39375 0.95625c-0.2625 0.2625 -0.58125 0.39375 -0.95625 0.39375Zm0.00275 7.55c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275Zm0 -12c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275ZM14.1 21.5c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Zm-0.15 -17.95c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Zm4.05275 15.4c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275Zm0 -4.05c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275Zm0 -3.9c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275Zm0 -4.05c-0.2685 0 -0.4944 -0.09075 -0.67775 -0.27225 -0.18335 -0.18165 -0.275 -0.40665 -0.275 -0.675 0 -0.2685 0.09075 -0.4944 0.27225 -0.67775 0.18165 -0.18335 0.40665 -0.275 0.675 -0.275 0.2685 0 0.4944 0.09075 0.67775 0.27225 0.18335 0.18165 0.275 0.40665 0.275 0.675 0 0.2685 -0.09075 0.4944 -0.27225 0.67775 -0.18165 0.18335 -0.40665 0.275 -0.675 0.275ZM20.975 14.475c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Zm0 -3.9c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Z" stroke-width="0.5"></path>
+        </svg>
+      </div>
+      <p id="visibility" class="text-xl font-semibold text-gray-300 text-start"></p>
+    </div>
+
+  </div>
+</div>
+
+<div class="mt-2 text-xs font-semibold text-gray-400">
+  Last updated: <span id="timestamp"></span>
+</div>
+
+<script type="text/javascript" language="JavaScript">
+  display();
+</script>
+
+{% endblock %}
+
+<!-- 7-Day forecast -->
+{% block side %}
+<div class="flex flex-col bg-[#171f2c] w-full h-full p-6 rounded-2xl text-xs font-semibold text-gray-400">
+
+  <h2 class="text-gray-400 text-xs mb-4">
+      7-DAY FORECAST
+    </h2>
+
+    <!-- Item -->
+    <div class="flex flex-1 items-center border-b border-gray-700">
+      <span class="flex-1">Today</span>
+      
+      <div class="flex items-center flex-1 gap-4">
+        <img src="/static/weather.webp" class="size-10" alt="weather icon">
+        <span class="text-gray-200">Sunny</span>
+      </div>
+      
+      <span class="flex-1 text-end">
+        <span class="text-gray-300">36</span>
+        <span class="text-gray-400">/22</span>
+      </span>
+    </div>
+    
+    <!-- Item -->
+    <div class="flex flex-1 items-center border-b border-gray-700">
+      <span class="flex-1">Tue</span>
+      
+      <div class="flex items-center flex-1 gap-4">
+        <img src="/static/weather.webp" class="size-10" alt="weather icon">
+        <span class="text-gray-200">Sunny</span>
+      </div>
+
+      <span class="flex-1 text-end">
+        <span class="text-gray-300">36</span>
+        <span class="text-gray-400">/22</span>
+      </span>
+    </div>
+    
+    <!-- Item -->
+    <div class="flex flex-1 items-center border-b border-gray-700">
+      <span class="flex-1">Wed</span>
+      
+      <div class="flex items-center flex-1 gap-4">
+        <img src="/static/weather.webp" class="size-10" alt="weather icon">
+        <span class="text-gray-200">Cloudy</span>
+      </div>
+      
+      <span class="flex-1 text-end">
+        <span class="text-gray-300">36</span>
+        <span class="text-gray-400">/22</span>
+      </span>
+    </div>
+
+    <!-- Item -->
+    <div class="flex flex-1 items-center border-b border-gray-700">
+      <span class="flex-1">Thu</span>
+      
+      <div class="flex items-center flex-1 gap-4">
+        <img src="/static/weather.webp" class="size-10" alt="weather icon">
+        <span class="text-gray-200">Cloudy</span>
+      </div>
+
+      <span class="flex-1 text-end">
+        <span class="text-gray-300">36</span>
+        <span class="text-gray-400">/22</span>
+      </span>
+    </div>
+
+    <!-- Item -->
+    <div class="flex flex-1 items-center border-b border-gray-700">
+      <span class="flex-1">Fri</span>
+      
+      <div class="flex items-center flex-1 gap-4">
+        <img src="/static/weather.webp" class="size-10" alt="weather icon">
+        <span class="text-gray-200">Storm</span>
+      </div>
+
+      <span class="flex-1 text-end">
+        <span class="text-gray-300">36</span>
+        <span class="text-gray-400">/22</span>
+      </span>
+    </div>
+
+    <!-- Item -->
+    <div class="flex flex-1 items-center border-b border-gray-700">
+      <span class="flex-1">Sat</span>
+      
+      <div class="flex items-center flex-1 gap-4">
+        <img src="/static/weather.webp" class="size-10" alt="weather icon">
+        <span class="text-gray-200">Brocken Clouds</span>
+      </div>
+
+      <span class="flex-1 text-end">
+        <span class="text-gray-300">36</span>
+        <span class="text-gray-400">/22</span>
+      </span>
+    </div>
+    
+    <!-- Item -->
+    <div class="flex flex-1 items-center">
+      <span class="flex-1">Sun</span>
+      
+      <div class="flex items-center flex-1 gap-4">
+        <img src="/static/weather.webp" class="size-10" alt="weather icon">
+        <span class="text-gray-200">Overcast</span>
+      </div>
+      
+      <span class="flex-1 text-end">
+        <span class="text-gray-300">36</span>
+        <span class="text-gray-400">/22</span>
+      </span>
+    </div>
+
+  </div>
 {% endblock %}

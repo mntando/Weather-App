@@ -51,7 +51,7 @@ async function display() {
 	
 	// Display temperatue
 	let temp = parseInt(weather.main.temp);
-	document.getElementById('temp').innerHTML = temp;
+	document.getElementById('temp').innerHTML = temp + '°';
 	
 	let min = parseInt(weather.main.temp_min);
 	let max = parseInt(weather.main.temp_max);
@@ -126,12 +126,12 @@ async function display() {
 	let t = new Date();
 	let timestamp = timezone(t.getUTCMinutes(), t.getUTCHours() + weather.timezone / 3600);
 	timestamp = ('0' + timestamp.hour).substr(-2) + ':' + ('0' + timestamp.minutes).substr(-2);
-	document.getElementById('timestamp').innerHTML = timestamp  + ' ' + days[t.getDay()].substr(0, 3) + ' ' + ('0' + t.getDate()).substr(-2); 
+	document.getElementById('timestamp').innerHTML = timestamp
 
-	// Weather forcast
-	async function forcast() {
-		let response = await fetch('/forcast?lat=' + weather.coord.lat + '&lon=' + weather.coord.lon);
-		var forcast = await response.json();
+	// Weather forecast
+	async function forecast() {
+		let response = await fetch('/forecast?lat=' + weather.coord.lat + '&lon=' + weather.coord.lon);
+		var forecast = await response.json();
 		
 		// Time, icon, temp, rain
 		let html = '';
@@ -141,23 +141,23 @@ async function display() {
 		+ ' 10c0 0 2.5 1.5 5 .5s5-.5 5-.5c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"/><path fill-rule="evenodd" d="M4.55'
 		+ '3 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87l-.894-.448z"/></svg>';
 		for (let i = 0; i < 8; i++) {
-			let time = new Date(forcast.list[i].dt * 1000);
+			let time = new Date(forecast.list[i].dt * 1000);
 			time = timezone(time.getUTCMinutes(), time.getUTCHours() + weather.timezone / 3600);
 			time = ('0' + time.hour).substr(-2) + ':' + ('0' + time.minutes).substr(-2);
-			let icon = forcast.list[i].weather[0].icon;
-			let temp = forcast.list[i].main.temp;
-			let rain = forcast.list[i].pop ? forcast.list[i].pop * 100 : 0;
+			let icon = forecast.list[i].weather[0].icon;
+			let temp = forecast.list[i].main.temp;
+			let rain = forecast.list[i].pop ? forecast.list[i].pop * 100 : 0;
 
-			html += '<div class="forcast">';
+			html += '<div class="forecast">';
 			html += '<div class="time">' + time + '</div>';
 			html += '<div class="icon"><img src="https://openweathermap.org/img/wn/' + icon + '@2x.png" alt="weather_icon"></div>';
 			html += '<div class="temp">' + parseInt(temp) + degree + '</div>';
 			html += '<div class="rain">' + svg + ' ' + parseInt(rain) + '%</div>';
 			html += '</div>';
 		}
-		document.getElementById('forcast').innerHTML = html;
+		document.getElementById('forecast').innerHTML = html;
 	}
-	forcast();
+	forecast();
 }
 
 
@@ -182,6 +182,7 @@ function locate() {
 	  }
 	  
 	  function error(err) {
+		window.location.href = '/?q=';
 		console.warn(`ERROR(${err.code}): ${err.message}`);
 	  }
 	  

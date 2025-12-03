@@ -28,18 +28,20 @@ def after_request(response):
 @app.route("/")
 def index():
     q = request.args.get("q")
-    if q:
-        # Error handling
-        code = 404
-        if q == 'error':
-            return render_template("apology.html", top=code), code
-        return render_template("index.html", location=q)
 
-    else:
+    if q is None:
         return render_template("welcome.html")
 
+    if q == "error":
+        return render_template("apology.html", top=404), 404
 
-# Get city name
+    if q == "":
+        return render_template("index.html", location="")
+
+    return render_template("index.html", location=q)
+
+
+# Search for city name from the database
 @app.route("/search")
 def search():
     q = request.args.get("q")
@@ -64,9 +66,9 @@ def weather():
     return jsonify(data)
 
 
-# Weather forcast
-@app.route("/forcast")
-def forcast():
+# Get weather forecast
+@app.route("/forecast")
+def forecast():
     lat = request.args.get("lat")
     lon = request.args.get("lon")
     if lat and lon:
@@ -78,7 +80,7 @@ def forcast():
     return jsonify(data)
 
 
-# Get city name
+# Get city name from coordinates
 @app.route("/locate")
 def locate():
     lat = request.args.get("lat")
