@@ -6,59 +6,81 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width">
     <meta name="google-site-verification" content="1hJiJXCiHaAuHZ8G2JISQEXyqLRJUEpoqubq6toN8u8" />
-
-    <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="/static/styles.css" rel="stylesheet">
-    <script src="/static/script.js" type="text/javascript"></script>
+    <link href="/static/app.css" rel="stylesheet">
+    <script src="/static/app.js" type="text/javascript"></script>
 
     <link href="/static/weather.webp" rel="icon">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- SimpleBar CSS and JS-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
 
     <title>{% block title %}{% endblock %}</title>
 
   </head>
 
- <body class="bg-[#0e1621] w-screen h-screen p-4 text-white flex gap-8 lg:overflow-hidden">
+  <body class="bg-[#0e1621] w-screen h-screen p-4 text-white flex gap-6 lg:overflow-hidden">
 
+    {% block app %}
     <aside class="bg-[#171f2c] h-full p-5 flex flex-col text-xs text-gray-400 transition-colors gap-10 rounded-2xl">
+      <a href="/" class="flex flex-col items-center mb-5 gap-2 hover:text-white cursor-pointer group transition-colors duration-200
+        {{ 'text-white' if active == 'home' else '' }}">
+        <img src="/static/weather.webp" alt="logo" class="size-8 object-contain">
+        <span class="text-xs font-semibold">Home</span>
+      </a>
 
-      <div class="flex flex-col items-center pb-5 gap-2 hover:text-white cursor-pointer group transition-colors duration-200">
-          <img src="/static/weather.webp" alt="logo" class="w-10 h-10 object-contain">
-          <span class="text-xs font-semibold">Home</span>
-      </div>
+      <a href="/weather" class="flex flex-col items-center gap-2 cursor-pointer hover:text-white group transition-colors duration-200
+        {{ 'text-white' if active == 'weather' else '' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-6" viewBox="0 0 16 16">
+          <path d="M11.473 11a4.5 4.5 0 0 0-8.72-.99A3 3 0 0 0 3 16h8.5a2.5 2.5 0 0 0 0-5z"/>
+          <path d="M10.5 1.5a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0zm3.743 1.964a.5.5 0 1 0-.707-.707l-.708.707a.5.5 0 0 0 .708.708zm-7.779-.707a.5.5 0 0 0-.707.707l.707.708a.5.5 0 1 0 .708-.708zm1.734 3.374a2 2 0 1 1 3.296 2.198q.3.423.516.898a3 3 0 1 0-4.84-3.225q.529.017 1.028.129m4.484 4.074c.6.215 1.125.59 1.522 1.072a.5.5 0 0 0 .039-.742l-.707-.707a.5.5 0 0 0-.854.377M14.5 6.5a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+        </svg>
+        <span class="text-xs font-semibold">Weather</span>
+      </a>
 
-      <div class="flex flex-col items-center gap-2 cursor-pointer hover:text-white group transition-colors duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-6" viewBox="0 0 16 16">
-            <path d="M11.473 11a4.5 4.5 0 0 0-8.72-.99A3 3 0 0 0 3 16h8.5a2.5 2.5 0 0 0 0-5z"/>
-            <path d="M10.5 1.5a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0zm3.743 1.964a.5.5 0 1 0-.707-.707l-.708.707a.5.5 0 0 0 .708.708zm-7.779-.707a.5.5 0 0 0-.707.707l.707.708a.5.5 0 1 0 .708-.708zm1.734 3.374a2 2 0 1 1 3.296 2.198q.3.423.516.898a3 3 0 1 0-4.84-3.225q.529.017 1.028.129m4.484 4.074c.6.215 1.125.59 1.522 1.072a.5.5 0 0 0 .039-.742l-.707-.707a.5.5 0 0 0-.854.377M14.5 6.5a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-          </svg>
-          <span class="text-xs font-semibold">Weather</span>
-      </div>
+      <a href="/cities" class="flex flex-col items-center gap-2 cursor-pointer hover:text-white group transition-colors duration-200
+        {{ 'text-white' if active == 'cities' else '' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+        </svg>
+        <span class="text-xs font-semibold">Cities</span>
+      </a>
 
-      <div class="flex flex-col items-center gap-2 cursor-pointer hover:text-white group transition-colors duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-          </svg>
-          <span class="text-xs font-semibold">Cities</span>
-      </div>
-
-      <div class="flex flex-col items-center gap-2 cursor-pointer hover:text-white group transition-colors duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-          </svg>
-          <span class="text-xs font-semibold">Settings</span>
-      </div>
-
+      <a href="/settings" class="flex flex-col items-center gap-2 cursor-pointer hover:text-white group transition-colors duration-200
+        {{ 'text-white' if active == 'settings' else '' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+        <span class="text-xs font-semibold">Settings</span>
+      </a>
     </aside>
 
-    <main class="flex flex-col w-3/5 rounded-2xl">
-      <input type="text" placeholder="Search for cities" class="w-full px-4 py-2 rounded-lg bg-[#1e2735] text-gray-200 focus:outline-none">
-      {% block main %}{% endblock %}
-    </main>
+    <div class="flex flex-row w-full h-full gap-6">
+      <div class="flex flex-col relative w-3/5 rounded-2xl">
+        <form onsubmit="const city = document.getElementById('cityInput').value.trim(); if (!city) return false; window.location.href='/weather?q=' + city; return false;">
+          <input id="cityInput" type="text" placeholder="Search for cities" class="w-full px-4 py-2 rounded-lg bg-[#1e2735] text-gray-200 focus:outline-none" autocomplete="off">
+          <ul id="cityInputResults" class="absolute top-10 w-full mt-1 bg-[#1e2735] text-gray-200 rounded-lg z-10"></ul>
+        </form>
+  
+        <div class="flex flex-col flex-1 min-h-0">
+          {% block main %}{% endblock %}
+        </div>
+      </div>
+  
+      <div class="w-2/5 flex flex-col flex-1 min-h-0">
+        {% block side %}
+        <aside class="w-full h-full bg-[#171f2c] p-4 rounded-2xl">
+        {% endblock %}
+      </div>
+    </div>
 
-    {% block side %}
-    <aside class="w-2/5 bg-[#171f2c] p-4 rounded-2xl">
+    <script defer>
+      App.initCitySearch();
+    </script>
     {% endblock %}
 
   </body>

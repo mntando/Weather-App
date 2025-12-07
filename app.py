@@ -25,6 +25,7 @@ def after_request(response):
     return response
 
 
+# MAIN ROUTES
 @app.route("/")
 def index():
     q = request.args.get("q")
@@ -36,25 +37,57 @@ def index():
         return render_template("apology.html", top=404), 404
 
     if q == "":
-        return render_template("index.html", location="")
+        return render_template("index.html", location=q, active="home")
 
-    return render_template("index.html", location=q)
+    return render_template("index.html", location=q, active="home")
 
 
-# Search for city name from the database
-@app.route("/search")
-def search():
+@app.route("/weather")
+def weather():
     q = request.args.get("q")
-    if q:
-        city = db.execute("SELECT * FROM cities WHERE name LIKE ? LIMIT 6", "%" + q + "%")
-    else:
-        city = []
-    return jsonify(city)
+
+    if q is None:
+        return render_template("welcome.html")
+
+    if q == "error":
+        return render_template("apology.html", top=404), 404
+    
+    if q == "":
+        return render_template("index.html", location=q, active="weather")
+    
+    return render_template("index.html", location=q, active="weather")
+
+
+@app.route("/cities")
+def cities():
+    return render_template("cities.html", active="cities")
+
+
+@app.route("/settings")
+def settings():
+    return render_template("settings.html", active="settings")
+
+
+# API ROUTES
+# Search for city name from the database
+@app.route("/api/cities")
+def city_search():
+    q = request.args.get("q", "").strip()
+    limit = request.args.get("limit", default=10, type=int)
+
+    limit = min(max(limit, 1), 20)
+
+    if not q:
+        return jsonify([])
+
+    results = db.execute("SELECT name FROM cities WHERE name LIKE ? LIMIT ?", f"%{q}%", limit)
+
+    return jsonify([row["name"] for row in results])
 
 
 # Get weather data
-@app.route("/weather")
-def weather():
+@app.route("/api/weather")
+def get_weather():
     city = request.args.get("q")
     if city:
         city = city.replace(" ", "%20")
@@ -67,7 +100,7 @@ def weather():
 
 
 # Get weather forecast
-@app.route("/forecast")
+@app.route("/api/forecast")
 def forecast():
     lat = request.args.get("lat")
     lon = request.args.get("lon")
@@ -81,7 +114,7 @@ def forecast():
 
 
 # Get city name from coordinates
-@app.route("/locate")
+@app.route("/api/locate")
 def locate():
     lat = request.args.get("lat")
     lon = request.args.get("lon")
