@@ -23,16 +23,13 @@
   </head>
 
   <body class="bg-[#0e1621] w-screen h-screen p-4 text-white flex gap-6 lg:overflow-hidden">
-
-    {% block app %}
     <aside class="bg-[#171f2c] h-full p-5 flex flex-col text-xs text-gray-400 transition-colors gap-10 rounded-2xl">
-      <a href="/" class="flex flex-col items-center mb-5 gap-2 hover:text-white cursor-pointer group transition-colors duration-200
+      <button onclick="App.getLocation()" class="flex flex-col items-center mb-5 gap-2 hover:text-white cursor-pointer group transition-colors duration-200
         {{ 'text-white' if active == 'home' else '' }}">
-        <img src="/static/weather.webp" alt="logo" class="size-8 object-contain">
-        <span class="text-xs font-semibold">Home</span>
-      </a>
+        <img src="/static/weather.webp" alt="logo" class="size-10 object-contain">
+      </button>
 
-      <a href="/weather" class="flex flex-col items-center gap-2 cursor-pointer hover:text-white group transition-colors duration-200
+      <a href="/" class="flex flex-col items-center gap-2 cursor-pointer hover:text-white group transition-colors duration-200
         {{ 'text-white' if active == 'weather' else '' }}">
         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-6" viewBox="0 0 16 16">
           <path d="M11.473 11a4.5 4.5 0 0 0-8.72-.99A3 3 0 0 0 3 16h8.5a2.5 2.5 0 0 0 0-5z"/>
@@ -60,9 +57,17 @@
     </aside>
 
     <div class="flex flex-row w-full h-full gap-6">
-      <div class="flex flex-col relative w-3/5 rounded-2xl">
-        <form onsubmit="const city = document.getElementById('cityInput').value.trim(); if (!city) return false; window.location.href='/weather?q=' + city; return false;">
-          <input id="cityInput" type="text" placeholder="Search for cities" class="w-full px-4 py-2 rounded-lg bg-[#1e2735] text-gray-200 focus:outline-none" autocomplete="off">
+      <div class="flex flex-col relative w-2/3 rounded-2xl">
+        <form action="/" method="get">
+          <div class="relative w-full">
+            <input id="cityInput" name="city" type="text" placeholder="Search for cities" class="w-full px-4 py-2 pr-12 rounded-lg bg-[#1e2735] text-gray-200 focus:outline-none" autocomplete="off">
+            <button onclick="App.getLocation()" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-700 rounded-full transition">
+              <svg class="size-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </button>
+          </div>
           <ul id="cityInputResults" class="absolute top-10 w-full mt-1 bg-[#1e2735] text-gray-200 rounded-lg z-10"></ul>
         </form>
   
@@ -71,7 +76,7 @@
         </div>
       </div>
   
-      <div class="w-2/5 flex flex-col flex-1 min-h-0">
+      <div class="w-1/3 flex flex-col flex-1 min-h-0">
         {% block side %}
         <aside class="w-full h-full bg-[#171f2c] p-4 rounded-2xl">
         {% endblock %}
@@ -81,7 +86,6 @@
     <script defer>
       App.initCitySearch();
     </script>
-    {% endblock %}
 
   </body>
 </html>

@@ -157,10 +157,11 @@ cython_debug/
 .DS_Store
 Thumbs.db
 
-# Database
-cities.db
+# Databases
 *.db
 
 # Production files
 run.py
 project.txt
+db.py
+weather-icons-dev.zip

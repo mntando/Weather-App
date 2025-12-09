@@ -5,20 +5,12 @@
 {% block main %}
 <div class="w-full p-8 flex items-center justify-between">
     <div>
-        <h1 id="location" class="text-3xl font-bold text-white case-sentence">{{ location }}</h1>
-        <p id="description" class="text-gray-400 case-sentence"></p>
-        <p id="temp" class="text-5xl font-semibold text-white mt-8"></p>
+      <h1 id="city" class="text-3xl font-bold text-white case-sentence">{{ city }}</h1>
+      <p class="text-gray-400 case-sentence">{{ weather.weather[0].description }}</p>
+      <p class="text-5xl font-semibold text-white mt-8">{{ '%.0f'|format(weather.main.feels_like) }}°</p>
     </div>
-
-    <!-- TODO: Remove these from scripts.js -->
-    <span id="range" class="hidden"></span>
-    <span id="date" class="hidden"></span>
-
-    <img id="weather_icon" alt="weather icon" class="size-40">
+    <img src="https://openweathermap.org/img/wn/{{ weather.weather[0].icon }}@2x.png" class="size-40" alt="weather icon">
 </div>
-
-<!-- TODO: edit on scipts.js -->
-<div id="forecast" class="hidden"></div>
 
 <!-- Forecast -->
 <div class="flex flex-col flex-1 w-full bg-[#171f2c] pt-6 pl-6 rounded-2xl min-h-0">
@@ -142,7 +134,7 @@
     AIR CONDITIONS
   </h2>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 text-gray-400 p-6 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-3 text-gray-400 p-6 gap-6">
     <div class="flex flex-col gap-1 text-center">
       <div class="flex">
         <p class="text-sm font-semibold">Wind</p>
@@ -150,7 +142,7 @@
         </g>
         </svg>
       </div>
-      <p id="wind" class="text-xl font-semibold text-gray-300 text-start"></p>
+      <p class="text-xl font-semibold text-gray-300 text-start">{{ weather.wind.speed }} m/s</p>
     </div>
 
     <div class="flex flex-col gap-1 text-center">
@@ -160,7 +152,7 @@
           <path fill="currentColor" d="M11.73805 6.9966 8.4236 1.71825a0.52 0.52 0 0 0 -0.8472 0L4.24705 7.0222A4.99305 4.99305 0 0 0 3.5 9.5a4.5 4.5 0 0 0 9 0 5.0316 5.0316 0 0 0 -0.76195 -2.5034ZM8 13.00025a3.50445 3.50445 0 0 1 -3.5 -3.5 3.989 3.989 0 0 1 0.60915 -1.9719l0.4675 -0.7444 5.0369 5.0366A3.4886 3.4886 0 0 1 8 13.00025Z" fill="#000000" stroke-width="0.5"></path>
         </svg>
       </div>
-      <p id="humidity" class="text-xl font-semibold text-gray-300 text-start"></p>
+      <p class="text-xl font-semibold text-gray-300 text-start">{{ weather.main.humidity }}%</p>
     </div>
 
     <div class="flex flex-col gap-1 text-center">
@@ -172,10 +164,10 @@
             <path d="M-102.5,-29.212304c-.978428,50.749,69.444075,50.444074,69,0" transform="matrix(0 1 -1 0 43.234977 243.498131)" fill="none"  stroke-width="20" stroke-linecap="round"/></g></g></g></g></g>
             <g transform="translate(-9.499897 -1.000244)"><g><g><g><path d="M-102.5,-29.212304c-.978428,50.749,69.444075,50.444074,69,0" transform="matrix(0 1 -1 0 38.73508 243.498131)" fill="none"  stroke-width="20" stroke-linecap="round"/></g></g></g></g>
             <line x1="-91.5" y1="0" x2="55.000103" y2="-0.001869" transform="translate(167.052398 168.999757)" fill="none"  stroke-width="20" stroke-linecap="round"/><line x1="-69.5" y1="0" x2="112.5" y2="0" transform="translate(127.947487 208.999756)" fill="none"  stroke-width="20" stroke-linecap="round"/>
-            <g transform="matrix(2.1 0 0 2.2 45 3.385998)"><line x1="50" y1="24.37" x2="50" y2="53.84" fill="none"  stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="39.55,41.2 50,54.16 60.45,41.2" fill="none"  stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
-          </svg>
+          <g transform="matrix(2.1 0 0 2.2 45 3.385998)"><line x1="50" y1="24.37" x2="50" y2="53.84" fill="none"  stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="39.55,41.2 50,54.16 60.45,41.2" fill="none"  stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+        </svg>
       </div>
-      <p id="pressure" class="text-xl font-semibold text-gray-300 text-start"></p>
+      <p class="text-xl font-semibold text-gray-300 text-start">{{ weather.main.pressure }} hPa</p>
     </div>
 
     <div class="flex flex-col gap-1 text-center">
@@ -194,20 +186,35 @@
           -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Zm0 -3.9c-0.15 0 -0.275 -0.05 -0.375 -0.15 -0.1 -0.1 -0.15 -0.225 -0.15 -0.375s0.05 -0.275 0.15 -0.375c0.1 -0.1 0.225 -0.15 0.375 -0.15s0.275 0.05 0.375 0.15c0.1 0.1 0.15 0.225 0.15 0.375s-0.05 0.275 -0.15 0.375c-0.1 0.1 -0.225 0.15 -0.375 0.15Z" stroke-width="0.5"></path>
         </svg>
       </div>
-      <p id="visibility" class="text-xl font-semibold text-gray-300 text-start"></p>
+      <p class="text-xl font-semibold text-gray-300 text-start">{{ '%.0f'|format(weather.visibility/1000) }} km</p>
+    </div>
+
+    {% if weather.rain %}
+    <div class="flex flex-col gap-1 text-center">
+      <div class="flex">
+        <p class="text-sm font-semibold">Precipitation</p>
+        <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M4.158 12.025a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m3 0a.5.5 0 0 1 .316.633l-1 3a.5.5 0 1 1-.948-.316l1-3a.5.5 0 0 1 .632-.317m3 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m3 0a.5.5 0 0 1 .316.633l-1 3a.5.5 0 1 1-.948-.316l1-3a.5.5 0 0 1 .632-.317m.247-6.998a5.001 5.001 0 0 0-9.499-1.004A3.5 3.5 0 1 0 3.5 11H13a3 3 0 0 0 .405-5.973"/>
+        </svg>
+      </div>
+      <p class="text-xl font-semibold text-gray-300 text-start">{% if weather.rain %}{{ weather.rain }}{% else %}0 {% endif %} mm/h</p>
+    </div>
+    {% endif %}
+
+    <div class="flex flex-col gap-1 text-center">
+      <div class="flex">
+        <p class="text-sm font-semibold">Cloudiness</p>
+        <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383"/>
+        </svg>
+      </div>
+      <p class="text-xl font-semibold text-gray-300 text-start case-sentence">
+        {{ weather.clouds.all }}%
+      </p>
     </div>
 
   </div>
 </div>
-
-<div class="mt-2 text-xs font-semibold text-gray-400 hidden">
-  Last updated: <span id="timestamp"></span>
-</div>
-
-<script type="text/javascript" language="JavaScript">
-  display();
-</script>
-
 {% endblock %}
 
 <!-- 7-Day forecast -->
