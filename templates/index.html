@@ -4,126 +4,49 @@
 
 {% block main %}
 <div class="w-full p-8 flex items-center justify-between">
-    <div>
-      <h1 id="city" class="text-3xl font-bold text-white case-sentence">{{ city }}</h1>
-      <p class="text-gray-400 case-sentence">{{ weather.weather[0].description }}</p>
+  <div>
+    <h1 id="city" class="text-3xl font-bold text-white case-sentence">{{ city }}</h1>
+    <p class="text-gray-400 case-sentence">{{ weather.weather[0].description }}</p>
       <p class="text-5xl font-semibold text-white mt-8">{{ '%.0f'|format(weather.main.feels_like) }}°</p>
     </div>
-    <img src="https://openweathermap.org/img/wn/{{ weather.weather[0].icon }}@2x.png" class="size-40" alt="weather icon">
-</div>
+    <img src="static/icons/svg-static/{{ ICON[weather.weather[0].icon] }}" class="size-40" alt="weather icon">
+  </div>
 
-<!-- Forecast -->
-<div class="flex flex-col flex-1 w-full bg-[#171f2c] pt-6 pl-6 rounded-2xl min-h-0">
-  <h2 class="text-gray-400 text-xs font-semibold">
-    TODAY'S FORECAST
-  </h2>
+  <!-- Hourly forecast -->
+  <div class="flex flex-col flex-1 w-full bg-[#171f2c] pt-6 pl-6 rounded-2xl min-h-0">
+    <h2 class="text-gray-400 text-xs font-semibold">
+      TODAY'S FORECAST
+    </h2>
 
   <div class="flex flex-col flex-1 min-h-0 overflow-y-auto" data-simplebar>
-    <div class="flex items-stretch font-semibold p-4">
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full border-r border-gray-600/40">
-        <p class="text-gray-400 text-xs">12:00 PM</p>
-        <div class="flex flex-1 w-full p-3 items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
+    <div class="flex items-stretch font-semibold p-4 divide-x divide-gray-700">
+    {% for item in hourly_forecast %}
+      {% if item.type == "hour" %}
+        <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
+          <p class="text-gray-400 text-xs">{{ item.time }}</p>
+          <div class="flex flex-1 w-full p-3 items-center justify-center">
+            <img src="/static/icons/svg-static/{{ ICON[item.icon] }}" class="w-full aspect-square object-contain" alt="">
+          </div>
+          <p class="text-white text-lg font-semibold">{{ item.feels_like }}°</p>
         </div>
-        <p class="text-white text-lg font-semibold">33°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full border-r border-gray-600/40">
-        <p class="text-gray-400 text-xs">6:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
+      {% elif item.type == "sunrise" %}
+        <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
+          <p class="text-gray-400 text-xs">{{ item.time }}</p>
+          <div class="flex flex-1 w-full p-3 items-center justify-center">
+            <img src="/static/icons/svg-static/sunrise.svg" class="w-full aspect-square object-contain" alt="">
+          </div>
+          <p class="text-white text-sm font-semibold">Sunrise</p>
         </div>
-        <p class="text-white text-lg font-semibold">32°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full border-r border-gray-600/40">
-        <p class="text-gray-400 text-xs mb-3"><span><span id="sunrise"></span> AM</span></p>
-        <svg class="flex flex-1 w-full p-3 items-center justify-center" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-          <path d="M7.646 1.146a.5.5 0 0 1 .708 0l1.5 1.5a.5.5 0 0 1-.708.708L8.5 2.707V4.5a.5.5 0 0 1-1 0V2.707l-.646.647a.5.5 0 1 1-.708-.708zM2.343 4.343a.5.5 0 0 1 .707 0l1.414 1.414a.5.5 0 0 1-.707.707L2.343 5.05a.5.5 0 0 1 0-.707m11.314 0a.5.5 0 0 1 0 .707l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0M11.709 11.5a4 4 0 1 0-7.418 0H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-3.79zM0 10a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 0 10m13 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
-        </svg>
-        <p class="text-white text-sm font-semibold">Sunrise</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full border-r border-gray-600/40">
-        <p class="text-gray-400 text-xs mb-3">6:00 AM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
+      {% elif item.type == "sunset" %}
+        <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
+          <p class="text-gray-400 text-xs">{{ item.time }}</p>
+          <div class="flex flex-1 w-full p-3 items-center justify-center">
+            <img src="/static/icons/svg-static/sunset.svg" class="w-full aspect-square object-contain" alt="">
+          </div>
+          <p class="text-white text-sm font-semibold">Sunset</p>
         </div>
-        <p class="text-white text-lg font-semibold">25°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full border-r border-gray-600/40">
-        <p class="text-gray-400 text-xs mb-3">12:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
-        </div>
-        <p class="text-white text-lg font-semibold">33°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full border-r border-gray-600/40">
-        <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
-        </div>
-        <p class="text-white text-lg font-semibold">32°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full border-r border-gray-600/40">
-        <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
-        </div>
-        <p class="text-white text-lg font-semibold">32°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
-        <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
-        </div>
-        <p class="text-white text-lg font-semibold">32°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
-        <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
-        </div>
-        <p class="text-white text-lg font-semibold">32°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
-        <p class="text-gray-400 text-xs mb-3"><span><span id="sunset"></span> PM</span></p>
-        <svg class="flex flex-1 w-full p-3 items-center justify-center" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-          <path d="M7.646 4.854a.5.5 0 0 0 .708 0l1.5-1.5a.5.5 0 0 0-.708-.708l-.646.647V1.5a.5.5 0 0 0-1 0v1.793l-.646-.647a.5.5 0 1 0-.708.708zm-5.303-.51a.5.5 0 0 1 .707 0l1.414 1.413a.5.5 0 0 1-.707.707L2.343 5.05a.5.5 0 0 1 0-.707zm11.314 0a.5.5 0 0 1 0 .706l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zM11.709 11.5a4 4 0 1 0-7.418 0H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-3.79zM0 10a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 0 10m13 0a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
-        </svg>
-        <p class="text-white text-sm font-semibold">Sunset</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
-        <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
-        </div>
-        <p class="text-white text-lg font-semibold">32°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
-        <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
-        </div>
-        <p class="text-white text-lg font-semibold">32°</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
-        <p class="text-gray-400 text-xs mb-3">6:00 PM</p>
-        <div class="flex-1 w-full p-3 flex items-center justify-center">
-          <img src="/static/weather.webp" class="w-full aspect-square object-contain" alt="">
-        </div>
-        <p class="text-white text-lg font-semibold">32°</p>
-      </div>
-  
+      {% endif %}
+    {% endfor %}
     </div>
   </div>
 </div>
@@ -189,7 +112,6 @@
       <p class="text-xl font-semibold text-gray-300 text-start">{{ '%.0f'|format(weather.visibility/1000) }} km</p>
     </div>
 
-    {% if weather.rain %}
     <div class="flex flex-col gap-1 text-center">
       <div class="flex">
         <p class="text-sm font-semibold">Precipitation</p>
@@ -197,9 +119,8 @@
           <path d="M4.158 12.025a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m3 0a.5.5 0 0 1 .316.633l-1 3a.5.5 0 1 1-.948-.316l1-3a.5.5 0 0 1 .632-.317m3 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m3 0a.5.5 0 0 1 .316.633l-1 3a.5.5 0 1 1-.948-.316l1-3a.5.5 0 0 1 .632-.317m.247-6.998a5.001 5.001 0 0 0-9.499-1.004A3.5 3.5 0 1 0 3.5 11H13a3 3 0 0 0 .405-5.973"/>
         </svg>
       </div>
-      <p class="text-xl font-semibold text-gray-300 text-start">{% if weather.rain %}{{ weather.rain }}{% else %}0 {% endif %} mm/h</p>
+      <p class="text-xl font-semibold text-gray-300 text-start">{% if weather.rain %}{{ weather.rain['1h'] }}{% else %}0 {% endif %} mm/h</p>
     </div>
-    {% endif %}
 
     <div class="flex flex-col gap-1 text-center">
       <div class="flex">
@@ -217,118 +138,28 @@
 </div>
 {% endblock %}
 
-<!-- 7-Day forecast -->
+<!-- Daily forecast -->
 {% block side %}
 <div class="flex flex-col bg-[#171f2c] w-full h-full p-6 rounded-2xl text-xs font-semibold text-gray-400">
-
   <h2 class="text-gray-400 text-xs mb-4">
       7-DAY FORECAST
-    </h2>
-
-    <!-- Item -->
+  </h2>
+  <div class="flex flex-col flex-1 divide-y divide-gray-700">
+    {% for item in daily_forecast %}
     <div class="flex flex-1 items-center border-b border-gray-700">
-      <span class="flex-1">Today</span>
+      <span class="flex-1">{{ item.day }}</span>
       
       <div class="flex items-center flex-1 gap-4">
-        <img src="/static/weather.webp" class="size-10" alt="weather icon">
-        <span class="text-gray-200">Sunny</span>
+        <img src="/static/icons/svg-static/{{ ICON[item.icon] }}" class="size-16" alt="weather icon">
+        <span class="text-gray-200 case-sentence">{{ item.description }}</span>
       </div>
-      
+  
       <span class="flex-1 text-end">
-        <span class="text-gray-300">36</span>
-        <span class="text-gray-400">/22</span>
+        <span class="text-gray-300">{{ item.temp_max }}</span>
+        <span class="text-gray-400">/{{ item.temp_min }}</span>
       </span>
     </div>
-    
-    <!-- Item -->
-    <div class="flex flex-1 items-center border-b border-gray-700">
-      <span class="flex-1">Tue</span>
-      
-      <div class="flex items-center flex-1 gap-4">
-        <img src="/static/weather.webp" class="size-10" alt="weather icon">
-        <span class="text-gray-200">Sunny</span>
-      </div>
-
-      <span class="flex-1 text-end">
-        <span class="text-gray-300">36</span>
-        <span class="text-gray-400">/22</span>
-      </span>
-    </div>
-    
-    <!-- Item -->
-    <div class="flex flex-1 items-center border-b border-gray-700">
-      <span class="flex-1">Wed</span>
-      
-      <div class="flex items-center flex-1 gap-4">
-        <img src="/static/weather.webp" class="size-10" alt="weather icon">
-        <span class="text-gray-200">Cloudy</span>
-      </div>
-      
-      <span class="flex-1 text-end">
-        <span class="text-gray-300">36</span>
-        <span class="text-gray-400">/22</span>
-      </span>
-    </div>
-
-    <!-- Item -->
-    <div class="flex flex-1 items-center border-b border-gray-700">
-      <span class="flex-1">Thu</span>
-      
-      <div class="flex items-center flex-1 gap-4">
-        <img src="/static/weather.webp" class="size-10" alt="weather icon">
-        <span class="text-gray-200">Cloudy</span>
-      </div>
-
-      <span class="flex-1 text-end">
-        <span class="text-gray-300">36</span>
-        <span class="text-gray-400">/22</span>
-      </span>
-    </div>
-
-    <!-- Item -->
-    <div class="flex flex-1 items-center border-b border-gray-700">
-      <span class="flex-1">Fri</span>
-      
-      <div class="flex items-center flex-1 gap-4">
-        <img src="/static/weather.webp" class="size-10" alt="weather icon">
-        <span class="text-gray-200">Storm</span>
-      </div>
-
-      <span class="flex-1 text-end">
-        <span class="text-gray-300">36</span>
-        <span class="text-gray-400">/22</span>
-      </span>
-    </div>
-
-    <!-- Item -->
-    <div class="flex flex-1 items-center border-b border-gray-700">
-      <span class="flex-1">Sat</span>
-      
-      <div class="flex items-center flex-1 gap-4">
-        <img src="/static/weather.webp" class="size-10" alt="weather icon">
-        <span class="text-gray-200">Brocken Clouds</span>
-      </div>
-
-      <span class="flex-1 text-end">
-        <span class="text-gray-300">36</span>
-        <span class="text-gray-400">/22</span>
-      </span>
-    </div>
-    
-    <!-- Item -->
-    <div class="flex flex-1 items-center">
-      <span class="flex-1">Sun</span>
-      
-      <div class="flex items-center flex-1 gap-4">
-        <img src="/static/weather.webp" class="size-10" alt="weather icon">
-        <span class="text-gray-200">Overcast</span>
-      </div>
-      
-      <span class="flex-1 text-end">
-        <span class="text-gray-300">36</span>
-        <span class="text-gray-400">/22</span>
-      </span>
-    </div>
-
+    {% endfor %}
   </div>
+</div>
 {% endblock %}

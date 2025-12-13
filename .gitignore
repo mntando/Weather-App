@@ -160,8 +160,13 @@ Thumbs.db
 # Databases
 *.db
 
-# Production files
+# Development files
 run.py
 project.txt
 db.py
 weather-icons-dev.zip
+log.txt
+tmp/
+cities.db-journal
+city.list.json
+*.svg

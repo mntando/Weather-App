@@ -59,15 +59,15 @@ const App = (() => {
 
 				cities.forEach(city => {
 				const li = document.createElement("li");
-				li.textContent = city;
+				li.textContent = city.name + (city.state ? `, ${city.state}` : `, ${city.country}`);
 				li.className = "px-4 py-2 hover:bg-gray-700 cursor-pointer rounded-lg";
 
 				// On click, set input value and redirect
 				li.onclick = (e) => {
 					e.stopPropagation(); // prevent outside click handler
-					input.value = city;
+					input.value = city.name;
 					resultsBox.classList.add("hidden");
-					window.location.href = '/?city=' + encodeURIComponent(city);
+					window.location.href = '/?city=' + encodeURIComponent(city.name) + '&lat=' + encodeURIComponent(city.lat) + '&lon=' + encodeURIComponent(city.lon);
 				};
 
 				resultsBox.appendChild(li);
@@ -83,7 +83,7 @@ const App = (() => {
 
 	// Get user's location and redirect to weather page
 	function getLocation() {
-		const options = {enableHighAccuracy: true, timeout: 5000, maximumAge: 0};
+		const options = {enableHighAccuracy: false, timeout: 5000, maximumAge: 0};
 		
 		function success(pos) {
 			const crd = pos.coords;
@@ -96,7 +96,7 @@ const App = (() => {
 		}
 		
 		function error(err) {
-			window.location.href = '/?lat=&lon=';
+			// window.location.href = '/';
 			console.warn(`ERROR(${err.code}): ${err.message}`);
 		}
 		
