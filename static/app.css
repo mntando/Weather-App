@@ -31,13 +31,8 @@
   border-radius: 999px;
 }
 
-/* Loading classes */
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-.animate-shimmer {
-  animation: shimmer 5s infinite;
-  background: linear-gradient(90deg, #2a3142 25%, #343d52 50%, #2a3142 75%);
-  background-size: 200% 100%;
+.weather-icon {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }

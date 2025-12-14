@@ -12,8 +12,8 @@ ICON = {
     "03d": "cloudy.svg",
     "03n": "cloudy.svg",
     
-    "04d": "cloudy.svg",
-    "04n": "cloudy.svg",
+    "04d": "overcast.svg",
+    "04n": "overcast.svg",
     
     "09d": "rain.svg",
     "09n": "rain.svg",

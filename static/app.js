@@ -59,8 +59,24 @@ const App = (() => {
 
 				cities.forEach(city => {
 				const li = document.createElement("li");
-				li.textContent = city.name + (city.state ? `, ${city.state}` : `, ${city.country}`);
 				li.className = "px-4 py-2 hover:bg-gray-700 cursor-pointer rounded-lg";
+				
+				// City name (primary)
+				const citySpan = document.createElement("span");
+				citySpan.textContent = city.name;
+				citySpan.className = "text-white"; // or whatever your normal text color is
+				
+				// State and country (secondary)
+				const parts = [];
+				if (city.state) parts.push(city.state);
+				parts.push(city.country);
+				
+				const metaSpan = document.createElement("span");
+				metaSpan.textContent = " " + parts.join(", "); // space for breathing room
+				metaSpan.className = "text-gray-300/60"; // lighter
+				
+				li.appendChild(citySpan);
+				li.appendChild(metaSpan);
 
 				// On click, set input value and redirect
 				li.onclick = (e) => {
@@ -87,16 +103,14 @@ const App = (() => {
 		
 		function success(pos) {
 			const crd = pos.coords;
-			// Get city name
-			async function city() {
+			async function weather() {
 				// Redirect to weather page
 				window.location.href = '/?lat=' + crd.latitude + '&lon=' + crd.longitude;
 			}
-			city();
+			weather();
 		}
 		
 		function error(err) {
-			// window.location.href = '/';
 			console.warn(`ERROR(${err.code}): ${err.message}`);
 		}
 		

@@ -16,7 +16,6 @@ app.secret_key = os.urandom(24)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Openweathermap API key (https://openweathermap.org/api)
-# TODO: Move to environment variable for production, this is just for demo purposes will use my free tier
 api_key = "0ef451aa617998b929aa1e094b1f157d"
 
 # Configure CS50 Library to use SQLite database
@@ -191,11 +190,28 @@ def city_search():
         return jsonify([])
 
     results = db.execute("""
-        SELECT cities.name, cities.lat, cities.lon, countries.name as country
+        SELECT
+            cities.name,
+            cities.lat,
+            cities.lon,
+            cities.state,
+            countries.name AS country
         FROM cities
         JOIN countries ON cities.country = countries.code
         WHERE cities.name LIKE ?
+        ORDER BY
+            LENGTH(cities.name) ASC,
+            cities.name ASC
         LIMIT ?
     """, f"{city}%", limit)
 
-    return jsonify([{"name": row["name"], "lat": row["lat"], "lon": row["lon"], "country": row["country"]} for row in results])
+    return jsonify([
+        {
+            "name": row["name"],
+            "lat": row["lat"],
+            "lon": row["lon"],
+            "state": row["state"],
+            "country": row["country"]
+        }
+        for row in results
+    ])
