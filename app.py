@@ -184,11 +184,10 @@ def get_coordinates(city):
 @app.route("/api/cities")
 def city_search():
     city = request.args.get("city", "").strip()
-    limit = 10
-
     if not city:
         return jsonify([])
-
+    
+    limit = 10
     results = db.execute("""
         SELECT
             cities.name,
