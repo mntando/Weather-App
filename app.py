@@ -4,8 +4,6 @@ import requests
 from cs50 import SQL
 from flask import Flask, jsonify, render_template, request, session
 
-from datetime import datetime
-
 from helpers import ICON, build_current_weather, build_hourly_forecast, build_daily_forecast
 
 # Configure application
@@ -35,7 +33,6 @@ def after_request(response):
 def inject_globals():
     return {
         'ICON': ICON,           # Inject ICON mapping into templates
-        'datetime': datetime    # Inject datetime module into templates
     }
 
 # MAIN ROUTES
@@ -45,6 +42,12 @@ def index():
     city = request.args.get("city")
     lat = request.args.get("lat")
     lon = request.args.get("lon")
+
+    units = request.args.get("units")
+    if units in ("metric", "imperial"):
+        session["units"] = units
+
+    units = session.get("units", "metric")
     
     # Validate coordinates if provided
     if lat and lon:
@@ -68,11 +71,11 @@ def index():
         lon = coordinates[0]["lon"]
     
     # Get current weather data
-    weather_raw, error = get_current_weather(lat, lon)
+    weather_raw, error = get_current_weather(lat, lon, units=units)
     if error:
         return render_template("apology.html", message=error)
     
-    weather = build_current_weather(weather_raw)
+    weather = build_current_weather(weather_raw, units=units)
     
     if not city:
         city = weather.get("name", "Unknown Location") # Get city name from weather response if we don't have it
@@ -80,14 +83,14 @@ def index():
     session["city"] = city
 
     # Get daily forecast data
-    daily_forecast_raw, error = get_daily_forecast(lat, lon)
+    daily_forecast_raw, error = get_daily_forecast(lat, lon, units=units)
     if error:
         return render_template("apology.html", message=error)
     
     daily_forecast = build_daily_forecast(daily_forecast_raw)
 
     # Get hourly forecast data 
-    hourly_forecast_raw, error = get_hourly_forecast(lat, lon)
+    hourly_forecast_raw, error = get_hourly_forecast(lat, lon, units=units)
     if error:
         return render_template("apology.html", message=error)
     
@@ -124,13 +127,22 @@ def get_current_weather(lat, lon, units="metric"):
     return data, None
 
 # Get hourly forecast data
-def get_hourly_forecast(lat, lon, units="metric"):
+def get_hourly_forecast(lat, lon, units="metric", hours=24):
+    """
+    Fetches hourly weather forecast data from OpenWeatherMap.
+
+    Args:
+        lat (float): Latitude of the location
+        lon (float): Longitude of the location
+        units (str): Unit system ("metric" or "imperial")
+        hours (int): Number of forecast hours to return
+    """
+
     if not lat or not lon:
         return None, "Coordinates required"
     
-    cnt = 24    # Number of hours to fetch
     url = "http://api.openweathermap.org/data/2.5/forecast/hourly"
-    params = {"lat": lat, "lon": lon, "appid": api_key, "cnt": cnt, "units": units}
+    params = {"lat": lat, "lon": lon, "appid": api_key, "cnt": hours, "units": units}
     response = requests.get(url, params=params)
 
     if response.status_code != 200:
@@ -143,13 +155,22 @@ def get_hourly_forecast(lat, lon, units="metric"):
     return data, None
 
 # Get daily forecast data
-def get_daily_forecast(lat, lon, units="metric"):
+def get_daily_forecast(lat, lon, units="metric", days=7):
+    """
+    Fetches daily weather forecast data from OpenWeatherMap.
+
+    Args:
+        lat (float): Latitude of the location
+        lon (float): Longitude of the location
+        units (str): Unit system ("metric" or "imperial")
+        days (int): Number of forecast days to return
+    """
+
     if not lat or not lon:
         return None, "Coordinates required"
     
-    cnt = 7    # Number of days to fetch
     url = "http://api.openweathermap.org/data/2.5/forecast/daily"
-    params = {"lat": lat, "lon": lon, "appid": api_key, "cnt": cnt, "units": units}
+    params = {"lat": lat, "lon": lon, "appid": api_key, "cnt": days, "units": units}
     response = requests.get(url, params=params)
 
     if response.status_code != 200:

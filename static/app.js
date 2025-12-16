@@ -59,7 +59,7 @@ const App = (() => {
 
 				cities.forEach(city => {
 				const li = document.createElement("li");
-				li.className = "px-4 py-2 hover:bg-gray-700 cursor-pointer rounded-lg";
+				li.className = "px-4 py-2 hover:bg-gray-700 cursor-pointer rounded-lg transition";
 				
 				// City name (primary)
 				const citySpan = document.createElement("span");

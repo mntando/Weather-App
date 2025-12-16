@@ -32,9 +32,35 @@ ICON = {
 }
 
 # Build current weather data structure
-def build_current_weather(weather):
-    """Transforms raw current weather data into a structured format for templates."""
-    return weather
+def build_current_weather(weather, units="metric"):
+    icon_file = ICON.get(weather["weather"][0]["icon"], "default.webp")
+
+    wind_speed = weather["wind"]["speed"]
+    if units == "metric":
+        wind = f"{wind_speed * 3.6:.1f} km/h"
+    else:
+        wind = f"{wind_speed:.1f} mph"
+
+    visibility = f"{weather['visibility'] / 1000:.0f} km"
+
+    precip = weather.get("rain", {}).get("1h", 0)
+    precip_unit = "mm/h" if units == "metric" else "in/h"
+
+    return {
+        "name": weather["name"],
+
+        "temp": round(weather["main"]["temp"]),
+        "feels_like": round(weather["main"]["feels_like"]),
+        "description": weather["weather"][0]["description"].title(),
+
+        "wind": wind,
+        "humidity": f"{weather['main']['humidity']}%",
+        "clouds": f"{weather['clouds']['all']}%",
+        "precipitation": f"{precip} {precip_unit}",
+        "visibility": visibility,
+
+        "icon": f"/static/icons/svg-static/{icon_file}",
+    }
 
 # Build hourly forecast data structure
 def build_hourly_forecast(hourly_forecast, daily_forecast):
@@ -118,11 +144,12 @@ def build_hourly_forecast(hourly_forecast, daily_forecast):
                 inserted_sunset_dates.add(hour_date)
         
         # Add normal forecast hour
+        icon_file = ICON.get(f["weather"][0]["icon"], "default.webp")
         items.append({
             "type": "hour",
             "time": hour_datetime.strftime("%H:%M"),
-            "icon": f["weather"][0]["icon"],
-            "feels_like": round(f["main"]["feels_like"]),
+            "icon": f"/static/icons/svg-static/{icon_file}",
+            "feels_like": f"{round(f["main"]["feels_like"])}°",
             "dt": hour
         })
 
@@ -163,10 +190,12 @@ def build_daily_forecast(forecast):
         else:
             day_label = forecast_date.strftime("%A")  # Monday, Tuesday, etc.
         
+        icon_file = ICON.get(f["weather"][0]["icon"], "default.webp")
         items.append({
             "day": day_label,
-            "icon": f["weather"][0]["icon"],
-            "description": f["weather"][0]["main"],  # "Sunny", "Cloudy", etc.
+            "icon": f"/static/icons/svg-static/{icon_file}",
+            "main": f["weather"][0]["main"],  # "Sunny", "Cloudy", etc.
+            "description": f["weather"][0]["description"].title(),
             "temp_max": round(f["temp"]["max"]),
             "temp_min": round(f["temp"]["min"]),
             "dt": f["dt"]
