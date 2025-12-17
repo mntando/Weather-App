@@ -1,5 +1,6 @@
 # helpers.py
 from datetime import datetime, timezone, timedelta
+from flask import session
 
 # Mapping OpenWeather icons to Basmilius icons
 ICON = {
@@ -31,31 +32,76 @@ ICON = {
     "50n": "mist.svg",
 }
 
-# Build current weather data structure
-def build_current_weather(weather, units="metric"):
-    icon_file = ICON.get(weather["weather"][0]["icon"], "default.webp")
+def update_session(city=None, units=None):
+    """Update session with city info and units preferences.
 
-    wind_speed = weather["wind"]["speed"]
+    Args:
+        city: dict with "name", "lat", "lon" keys, or None
+        units: "metric" or "imperial", or None
+    """
+    # Update units if provided
+    if units in ("metric", "imperial"):
+        session["units"] = units
+
+    # Update recent cities if city provided
+    if city:
+        if "cities" not in session:
+            session["cities"] = []
+
+        # Remove city if already in list (match by coordinates, not just name)
+        session["cities"] = [
+            c for c in session["cities"]
+            if not (
+                c.get("lat") == city.get("lat")
+                and c.get("lon") == city.get("lon")
+            )
+        ]
+
+        # Add to front of list
+        session["cities"].insert(0, {
+            "name": city.get("name"),
+            "lat": city.get("lat"),
+            "lon": city.get("lon")
+        })
+
+        # Keep only 5 most recent
+        session["cities"] = session["cities"][:4]
+
+        session.modified = True
+
+# Build current weather data structure
+def build_current_weather(weather_current, units="metric"):
+    icon_file = ICON.get(weather_current["weather"][0]["icon"], "default.webp")
+
+    local_time = datetime.fromtimestamp(
+        weather_current["dt"] + weather_current["timezone"],
+        tz=timezone.utc
+    )
+
+    wind_speed = weather_current["wind"]["speed"]
     if units == "metric":
         wind = f"{wind_speed * 3.6:.1f} km/h"
     else:
         wind = f"{wind_speed:.1f} mph"
 
-    visibility = f"{weather['visibility'] / 1000:.0f} km"
+    visibility = f"{weather_current['visibility'] / 1000:.0f} km"
 
-    precip = weather.get("rain", {}).get("1h", 0)
+    precip = weather_current.get("rain", {}).get("1h", 0)
     precip_unit = "mm/h" if units == "metric" else "in/h"
 
     return {
-        "name": weather["name"],
+        "name": weather_current["name"],
+        "local_time": local_time.strftime("%H:%M"),
 
-        "temp": round(weather["main"]["temp"]),
-        "feels_like": round(weather["main"]["feels_like"]),
-        "description": weather["weather"][0]["description"].title(),
+        "temp": round(weather_current["main"]["temp"]),
+        "temp_min": round(weather_current["main"]["temp_min"]),
+        "temp_max": round(weather_current["main"]["temp_max"]),
+        "feels_like": round(weather_current["main"]["feels_like"]),
+        "description": weather_current["weather"][0]["description"].title(),
 
         "wind": wind,
-        "humidity": f"{weather['main']['humidity']}%",
-        "clouds": f"{weather['clouds']['all']}%",
+        "humidity": f"{weather_current['main']['humidity']}%",
+        "clouds": f"{weather_current['clouds']['all']}%",
         "precipitation": f"{precip} {precip_unit}",
         "visibility": visibility,
 
@@ -63,100 +109,87 @@ def build_current_weather(weather, units="metric"):
     }
 
 # Build hourly forecast data structure
-def build_hourly_forecast(hourly_forecast, daily_forecast):
-    """Transforms raw hourly forecast data into a structured format with sunrise/sunset markers.
-    
-    Uses daily forecast data to get accurate sunrise/sunset times for each day.
-    Example output structure
-    items = [
-        {
-            "type": "hour",
-            "time": "06:00",  # Local time (HH:MM format)
-            "icon": "01d",    # OpenWeatherMap icon code
-            "feels_like": 18, # Temperature rounded to integer
-            "dt": 1702450800  # Unix timestamp (for reference/sorting)
-        },
-        {
-            "type": "sunrise",
-            "time": "06:42",  # Local sunrise time
-            "dt": 1702453320  # Unix timestamp of sunrise
-        },
-        ... more hourly forecasts ...
-        {
-            "type": "sunset",
-            "time": "17:23",  # Local sunset time
-            "dt": 1702491780  # Unix timestamp of sunset
-        },
-        ... more hourly forecasts ...
-    ]
+def build_hourly_forecast(forecast_hourly, forecast_daily=None):
+    """Transforms raw forecast data into a structured hourly format.
+    Sunrise/sunset markers are added only if daily_forecast is provided.
     """
-    timezone_offset = hourly_forecast["city"]["timezone"]  # seconds from UTC
+
+    timezone_offset = forecast_hourly["city"]["timezone"]  # seconds from UTC
     local_timezone = timezone(timedelta(seconds=timezone_offset))
-    
-    # Build lookup of sunrise/sunset times by date from daily forecast
+
+    items = []
+
+    # ---------- OPTIONAL sunrise/sunset prep ----------
     sunrise_sunset_by_date = {}
-    for day in daily_forecast["list"]:
-        day_date = datetime.fromtimestamp(day["dt"], tz=local_timezone).date()
-        sunrise_sunset_by_date[day_date] = {
-            "sunrise": day["sunrise"],
-            "sunset": day["sunset"]
-        }
-    
-    # Track which sunrise/sunset we've inserted for each date
     inserted_sunrise_dates = set()
     inserted_sunset_dates = set()
-    
-    # Get first hour to check if sunrise/sunset already passed
-    first_hour = hourly_forecast["list"][0]["dt"]
-    
-    items = []
-    
-    for f in hourly_forecast["list"]:
+
+    if forecast_daily:
+        for day in forecast_daily["list"]:
+            day_date = datetime.fromtimestamp(
+                day["dt"], tz=local_timezone
+            ).date()
+            sunrise_sunset_by_date[day_date] = {
+                "sunrise": day["sunrise"],
+                "sunset": day["sunset"]
+            }
+
+        first_hour = forecast_hourly["list"][0]["dt"]
+    # --------------------------------------------------
+
+    for f in forecast_hourly["list"]:
         hour = f["dt"]
         hour_datetime = datetime.fromtimestamp(hour, tz=local_timezone)
         hour_date = hour_datetime.date()
-        
-        # Get sunrise/sunset for this date if available
-        if hour_date in sunrise_sunset_by_date:
+
+        # ---------- OPTIONAL sunrise/sunset insertion ----------
+        if sunrise_sunset_by_date and hour_date in sunrise_sunset_by_date:
             sunrise = sunrise_sunset_by_date[hour_date]["sunrise"]
             sunset = sunrise_sunset_by_date[hour_date]["sunset"]
-            
-            # Insert sunrise if: not inserted yet, current hour passed it, and it's after forecast start
-            if (hour_date not in inserted_sunrise_dates and 
-                hour >= sunrise and 
-                sunrise >= first_hour):
+
+            if (
+                hour_date not in inserted_sunrise_dates
+                and hour >= sunrise
+                and sunrise >= first_hour
+            ):
                 items.append({
                     "type": "sunrise",
-                    "time": datetime.fromtimestamp(sunrise, tz=local_timezone).strftime("%H:%M"),
+                    "time": datetime.fromtimestamp(
+                        sunrise, tz=local_timezone
+                    ).strftime("%H:%M"),
                     "dt": sunrise
                 })
                 inserted_sunrise_dates.add(hour_date)
-            
-            # Insert sunset if: not inserted yet, current hour passed it, and it's after forecast start
-            if (hour_date not in inserted_sunset_dates and 
-                hour >= sunset and 
-                sunset >= first_hour):
+
+            if (
+                hour_date not in inserted_sunset_dates
+                and hour >= sunset
+                and sunset >= first_hour
+            ):
                 items.append({
                     "type": "sunset",
-                    "time": datetime.fromtimestamp(sunset, tz=local_timezone).strftime("%H:%M"),
+                    "time": datetime.fromtimestamp(
+                        sunset, tz=local_timezone
+                    ).strftime("%H:%M"),
                     "dt": sunset
                 })
                 inserted_sunset_dates.add(hour_date)
-        
-        # Add normal forecast hour
+        # ------------------------------------------------------
+
+        # Normal forecast hour
         icon_file = ICON.get(f["weather"][0]["icon"], "default.webp")
         items.append({
             "type": "hour",
             "time": hour_datetime.strftime("%H:%M"),
             "icon": f"/static/icons/svg-static/{icon_file}",
-            "feels_like": f"{round(f["main"]["feels_like"])}°",
+            "feels_like": f"{round(f['main']['feels_like'])}°",
             "dt": hour
         })
 
     return items
 
 # Build daily forecast data structure
-def build_daily_forecast(forecast):
+def build_daily_forecast(forecast_daily):
     """Transforms raw daily forecast data into structured format.
     
     Example output:
@@ -172,13 +205,13 @@ def build_daily_forecast(forecast):
         ...
     ]
     """
-    timezone_offset = forecast["city"]["timezone"]  # seconds from UTC
+    timezone_offset = forecast_daily["city"]["timezone"]  # seconds from UTC
     local_timezone = timezone(timedelta(seconds=timezone_offset))
     
     items = []
     today = datetime.now(tz=local_timezone).date()
     
-    for f in forecast["list"]:
+    for f in forecast_daily["list"]:
         forecast_date = datetime.fromtimestamp(f["dt"], tz=local_timezone).date()
         
         # Determine day label
