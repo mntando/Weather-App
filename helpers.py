@@ -93,10 +93,10 @@ def build_current_weather(weather_current, units="metric"):
         "name": weather_current["name"],
         "local_time": local_time.strftime("%H:%M"),
 
-        "temp": round(weather_current["main"]["temp"]),
+        "temp": f"{round(weather_current["main"]["temp"])}°",
         "temp_min": round(weather_current["main"]["temp_min"]),
         "temp_max": round(weather_current["main"]["temp_max"]),
-        "feels_like": round(weather_current["main"]["feels_like"]),
+        "feels_like": f"{round(weather_current["main"]["feels_like"])}°",
         "description": weather_current["weather"][0]["description"].title(),
 
         "wind": wind,

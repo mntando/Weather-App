@@ -22,7 +22,6 @@ db = SQL("sqlite:///cities.db")
 # Cache handling
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})  # Use 'redis' for production
 
-
 # Browser cache
 @app.after_request
 def after_request(response):
@@ -75,7 +74,6 @@ def index():
             coordinates, error = get_coordinates(city)
             if error:
                 return render_template("apology.html", message=error)
-
             lat = coordinates[0]["lat"]
             lon = coordinates[0]["lon"]
 
@@ -133,9 +131,21 @@ def cities():
         weather_current_raw, error = get_current_weather(city["lat"], city["lon"], units=units)
         if error:
             continue
-        weather_cards.append(
-            build_current_weather(weather_current_raw)
-        )
+
+        forecast_3hour_raw, error = get_3hour_forecast(city["lat"], city["lon"], units=units, blocks=5)
+        if error:
+            continue
+
+        forecast_daily_raw, error = get_daily_forecast(city["lat"], city["lon"], units=units, days=3)
+        if error:
+            continue
+
+        weather_cards.append({
+            "city": city,
+            "weather_current": build_current_weather(weather_current_raw),
+            "forecast_3hour": build_hourly_forecast(forecast_3hour_raw),
+            "forecast_daily": build_daily_forecast(forecast_daily_raw)
+        })
 
     return render_template(
         "cities.html",
@@ -297,7 +307,7 @@ def get_3hour_forecast(lat, lon, units="metric", blocks=5):
     
     return data, None
 
-# Get coordinates from city name
+# Get coordinates using city name
 def get_coordinates(city):
     if not city or city.strip() == "":
         return None, "City required"
