@@ -5,83 +5,150 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="/static/pages/cities.js" type="text/javascript"></script>
+<script>
+document.addEventListener('alpine:init', () => {
+  const citiesData = JSON.parse(document.getElementById('cities-data').dataset.cities);
+
+  Alpine.store('citiesStore', {
+    cities: citiesData,
+    activeCity: null,
+
+    init() {
+      if (!this.cities.length) return;
+
+      // Build current signature
+      const currentSig = this.cities.map(c => `${c.city.lat},${c.city.lon}`).join('|');
+
+      const savedSig = localStorage.getItem('citiesSig');
+      const lastKey = localStorage.getItem('lastCity');
+
+      // If city list changed, reset selection
+      if (savedSig !== currentSig) {
+        localStorage.setItem('citiesSig', currentSig);
+        localStorage.removeItem('lastCity');
+
+        this.activeCity = this.cities[0];
+        this.remember(this.activeCity);
+        return;
+      }
+
+      // Restore last city if possible
+      if (lastKey) {
+        const found = this.cities.find(c => `${c.city.lat},${c.city.lon}` === lastKey);
+        if (found) {
+          this.activeCity = found;
+          return;
+        }
+      }
+
+      // Fallback to first city
+      this.activeCity = this.cities[0];
+      this.remember(this.activeCity);
+    },
+
+    selectCity(cityItem) {
+      this.activeCity = cityItem;
+      this.remember(cityItem);
+    },
+
+    remember(cityItem) {
+      localStorage.setItem('lastCity', `${cityItem.city.lat},${cityItem.city.lon}`);
+    }
+  });
+});
+</script>
 {% endblock %}
 
 {% block main %}
-<div class="flex flex-col w-full h-full mt-6 gap-4 text-white">
+<div x-data x-init="$store.citiesStore.init()" id="cities-data" data-cities='{{ cities | tojson }}' class="flex flex-col w-full h-full mt-6 gap-4 text-white">
   <h2 class="text-xs font-semibold text-gray-400">
     LATEST SEARCHES
   </h2>
 
   {% if cities %}
-    {% for item in cities %}
-    <div class="city-card flex w-full items-center bg-[#1c2534] gap-4 rounded-2xl py-2 px-4 hover:bg-[#151e2b] cursor-pointer transition" data-key="{{ item.city.lat }},{{ item.city.lon }}">
-      <img src="{{ item.weather_current.icon }}" alt="weather" class="size-24">
+  <template x-for="cityItem in $store.citiesStore.cities" :key="cityItem.city.lat + ',' + cityItem.city.lon">
+    <div 
+        class="city-card flex w-full items-center bg-[#1c2534] gap-4 rounded-2xl py-2 px-4 hover:bg-[#151e2b] cursor-pointer transition"
+        :class="{'ring-1 ring-blue-500 bg-transparent': $store.citiesStore.activeCity && $store.citiesStore.activeCity.city.lat === cityItem.city.lat && $store.citiesStore.activeCity.city.lon === cityItem.city.lon}"
+        @click="$store.citiesStore.selectCity(cityItem)"
+    >
+      <img :src="cityItem.weather_current.icon" alt="weather" class="size-24">
       <div class="flex flex-1 justify-between">
         <div>
-          <p class="text-2xl font-semibold case-sentence">{{ item.city.name }}</p>
-          <p class="text-sm text-gray-400 font-medium">{{ item.weather_current.local_time }}</p>
+          <p class="text-2xl font-semibold case-sentence" x-text="cityItem.city.name"></p>
+          <p class="text-sm text-gray-400 font-medium" x-text="cityItem.weather_current.local_time"></p>
         </div>
         <p class="self-start text-3xl font-semibold leading-none">
-          {{ item.weather_current.feels_like }}
-          <span class="ml-1 align-top text-sm text-gray-400 font-medium"><span class="text-gray-300">{{ item.weather_current.temp_max}}</span> /{{ item.weather_current.temp_min }}</span>
+          <span x-text="cityItem.weather_current.feels_like"></span>
+          <span class="ml-1 align-top text-sm text-gray-400 font-medium">
+            <span class="text-gray-300" x-text="cityItem.weather_current.temp_max"></span> /
+            <span x-text="cityItem.weather_current.temp_min"></span>
+          </span>
         </p>
       </div>
-      <!-- Embedded payload -->
-      <script type="application/json" class="city-payload">
-        {{ item | tojson }}
-      </script>
     </div>
-    {% endfor %}
+  </template>
+
   {% else %}
     <div class="flex items-center justify-center py-10 text-center">
-      <p class="text-gray-400">
-        Search for a city to see it here
-      </p>
+      <p class="text-gray-400">Search for a city to see it here</p>
     </div>
   {% endif %}
 </div>
 {% endblock %}
 
 {% block side %}
-  {% if cities %}
-  <div class="w-full h-full">
-    <div class="w-full p-8 flex items-center text-white justify-between">
-      <div>
-        <h1 id="city" class="text-3xl font-bold case-sentence"></h1>
-        <p id="description" class="text-gray-400 case-sentence case-sentence"></p>
-        <p id="current-temp" class="text-5xl font-semibold mt-8"></p>
-      </div>
-
-      <div id="current-icon" class="weather-icon size-40"
-        role="img" 
-        aria-label="weather icon">
-      </div>
+<div x-data class="w-full h-full" x-show="$store.citiesStore.activeCity">
+  <!-- Current weather -->
+  <div class="w-full p-8 flex items-center text-white justify-between">
+    <div>
+      <h1 class="text-3xl font-bold case-sentence" x-text="$store.citiesStore.activeCity.city.name"></h1>
+      <p class="text-gray-400 case-sentence" x-text="$store.citiesStore.activeCity.weather_current.description"></p>
+      <p class="text-5xl font-semibold mt-8" x-text="$store.citiesStore.activeCity.weather_current.feels_like"></p>
     </div>
-
-    <!-- Today's forecast -->
-    <div class="flex flex-col flex-1 w-full pt-6 pl-6 text-gray-400 min-h-0">
-      <h2 class="text-xs font-semibold">
-        TODAY'S FORECAST
-      </h2>
-      <div class="flex flex-col flex-1 min-h-0" data-simplebar>
-        <div id="hourly-container" class="flex items-stretch font-semibold p-4 divide-x divide-gray-700"></div>
-      </div>
+    <div class="weather-icon size-40"
+         :style="`background-image: url(${ $store.citiesStore.activeCity.weather_current.icon })`"
+         role="img"
+         aria-label="weather icon">
     </div>
-
-    <!-- 4-day forecast -->
-    <div class="flex flex-1 flex-col w-full p-6 text-sm font-semibold border-t border-gray-700 text-gray-400">
-      <h2 class="text-xs mb-2">
-        3-DAY FORECAST
-      </h2>
-      <div id="daily-container" class="flex flex-col flex-1 divide-y divide-gray-700"></div>
-    </div>
-    
-    <script defer>
-      CitiesPage.init();
-    </script>
-    
   </div>
-  {% endif %}
+
+  <!-- 3hour forecast -->
+  <div class="flex flex-col flex-1 w-full pt-6 pl-6 text-gray-400 min-h-0">
+    <h2 class="text-xs font-semibold">
+      TODAY'S FORECAST
+    </h2>
+    <div class="flex flex-col flex-1 min-h-0 overflow-x-auto" data-simplebar>
+      <div class="flex items-stretch font-semibold p-4">
+        <template x-for="h in $store.citiesStore.activeCity.forecast_3hour" :key="h.time">
+          <div class="flex flex-col items-center justify-between min-w-[100px] p-1">
+            <p class="text-xs" x-text="h.time"></p>
+            <div class="flex flex-1 w-full p-3 items-center justify-center">
+              <img :src="h.icon" class="w-full aspect-square object-contain">
+            </div>
+            <p class="text-white text-lg font-semibold" x-text="h.feels_like"></p>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily forecast -->
+  <div class="flex flex-1 flex-col w-full p-6 text-sm font-semibold border-t border-gray-700 text-gray-400">
+    <h2 class="text-xs mb-2">DAILY FORECAST</h2>
+    <template x-for="d in $store.citiesStore.activeCity.forecast_daily" :key="d.day">
+      <div class="flex items-center p-2">
+        <span class="flex-1 text-xs" x-text="d.day"></span>
+        <div class="flex items-center flex-1 gap-4">
+          <img :src="d.icon" class="size-16">
+          <span class="text-gray-200" x-text="d.main"></span>
+        </div>
+        <span class="flex-1 text-end">
+          <span class="text-gray-300" x-text="d.temp_max"></span> / 
+          <span x-text="d.temp_min"></span>
+        </span>
+      </div>
+    </template>
+  </div>
+</div>
 {% endblock %}
