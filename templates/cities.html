@@ -60,35 +60,40 @@ document.addEventListener('alpine:init', () => {
 {% endblock %}
 
 {% block main %}
-<div x-data x-init="$store.citiesStore.init()" id="cities-data" data-cities='{{ cities | tojson }}' class="flex flex-col w-full h-full mt-6 gap-4 text-white">
-  <h2 class="text-xs font-semibold text-gray-400">
+<div x-data x-init="$store.citiesStore.init()" id="cities-data" data-cities='{{ cities | tojson }}' class="flex flex-col w-full h-full mt-2 gap-2 lg:mt-6 lg:gap-4 text-white">
+  <h2 class="text-xs font-semibold text-gray-400 px-4 lg:px-0">
     LATEST SEARCHES
   </h2>
-
   {% if cities %}
-  <template x-for="cityItem in $store.citiesStore.cities" :key="cityItem.city.lat + ',' + cityItem.city.lon">
-    <div 
-        class="city-card flex w-full items-center bg-[#1c2534] gap-4 rounded-2xl py-2 px-4 hover:bg-[#151e2b] cursor-pointer transition"
-        :class="{'ring-1 ring-blue-500 bg-transparent': $store.citiesStore.activeCity && $store.citiesStore.activeCity.city.lat === cityItem.city.lat && $store.citiesStore.activeCity.city.lon === cityItem.city.lon}"
-        @click="$store.citiesStore.selectCity(cityItem)"
-    >
-      <img :src="cityItem.weather_current.icon" alt="weather" class="size-24">
-      <div class="flex flex-1 justify-between">
-        <div>
-          <p class="text-2xl font-semibold case-sentence" x-text="cityItem.city.name"></p>
-          <p class="text-sm text-gray-400 font-medium" x-text="cityItem.weather_current.local_time"></p>
-        </div>
-        <p class="self-start text-3xl font-semibold leading-none">
-          <span x-text="cityItem.weather_current.feels_like"></span>
-          <span class="ml-1 align-top text-sm text-gray-400 font-medium">
-            <span class="text-gray-300" x-text="cityItem.weather_current.temp_max"></span> /
-            <span x-text="cityItem.weather_current.temp_min"></span>
-          </span>
-        </p>
+  <div x-data x-init="if (window.matchMedia('(max-width: 1023px)').matches) {new SimpleBar($refs.citiesScroll)}">
+    <div x-ref="citiesScroll" class="overflow-x-auto overflow-y-hidden lg:overflow-visible py-2 -mx-4 lg:mx-0">
+      <div class="flex lg:flex-col gap-2 px-4 lg:px-0">
+        <template x-for="cityItem in $store.citiesStore.cities" :key="cityItem.city.lat + ',' + cityItem.city.lon">
+          <div 
+            class="city-card flex flex-shrink-0 w-64 lg:w-full items-center bg-[#1c2534] gap-2 lg:gap-4 rounded-2xl py-2 px-2 mb-1 lg:px-4 hover:bg-[#151e2b] cursor-pointer transition"
+            :class="{'ring-1 ring-blue-500 bg-transparent': $store.citiesStore.activeCity && $store.citiesStore.activeCity.city.lat === cityItem.city.lat && $store.citiesStore.activeCity.city.lon === cityItem.city.lon}"
+            @click="$store.citiesStore.selectCity(cityItem)"
+          >
+            <img :src="cityItem.weather_current.icon" alt="weather" class="size-20 lg:size-24">
+            <div class="flex flex-1 justify-between">
+              <div>
+                <p class="text-2xl font-semibold case-sentence" x-text="cityItem.city.name"></p>
+                <p class="text-sm text-gray-400 font-medium" x-text="cityItem.weather_current.local_time"></p>
+              </div>
+              <p class="hidden lg:block self-start text-3xl font-semibold leading-none">
+                <span x-text="cityItem.weather_current.temp"></span>
+                <span class="ml-1 align-top text-sm text-gray-400 font-medium">
+                  <span class="text-gray-300" x-text="cityItem.weather_current.temp_max"></span> /
+                  <span x-text="cityItem.weather_current.temp_min"></span>
+                </span>
+              </p>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
-  </template>
-
+  </div>
+  
   {% else %}
     <div class="flex items-center justify-center py-10 text-center">
       <p class="text-gray-400">Search for a city to see it here</p>
@@ -98,57 +103,60 @@ document.addEventListener('alpine:init', () => {
 {% endblock %}
 
 {% block side %}
-<div x-data class="w-full h-full" x-show="$store.citiesStore.activeCity">
-  <!-- Current weather -->
-  <div class="w-full p-8 flex items-center text-white justify-between">
-    <div>
-      <h1 class="text-3xl font-bold case-sentence" x-text="$store.citiesStore.activeCity.city.name"></h1>
-      <p class="text-gray-400 case-sentence" x-text="$store.citiesStore.activeCity.weather_current.description"></p>
-      <p class="text-5xl font-semibold mt-8" x-text="$store.citiesStore.activeCity.weather_current.feels_like"></p>
+  {% if cities %}
+  <div x-data class="w-full h-full" x-show="$store.citiesStore.activeCity">
+    <!-- Current weather -->
+    <div class="w-full px-2 lg:py-4 lg:px-8 flex items-center text-white justify-between">
+      <div>
+        <h1 class="text-3xl font-bold case-sentence" x-text="$store.citiesStore.activeCity.city.name"></h1>
+        <p class="text-gray-400 case-sentence" x-text="$store.citiesStore.activeCity.weather_current.description"></p>
+        <p class="text-5xl font-semibold mt-8" x-text="$store.citiesStore.activeCity.weather_current.feels_like"></p>
+      </div>
+      <div class="weather-icon size-40"
+          :style="`background-image: url(${ $store.citiesStore.activeCity.weather_current.icon })`"
+          role="img"
+          aria-label="weather icon">
+      </div>
     </div>
-    <div class="weather-icon size-40"
-         :style="`background-image: url(${ $store.citiesStore.activeCity.weather_current.icon })`"
-         role="img"
-         aria-label="weather icon">
-    </div>
-  </div>
 
-  <!-- 3hour forecast -->
-  <div class="flex flex-col flex-1 w-full pt-6 pl-6 text-gray-400 min-h-0">
-    <h2 class="text-xs font-semibold">
-      TODAY'S FORECAST
-    </h2>
-    <div class="flex flex-col flex-1 min-h-0 overflow-x-auto" data-simplebar>
-      <div class="flex items-stretch font-semibold p-4">
-        <template x-for="h in $store.citiesStore.activeCity.forecast_3hour" :key="h.time">
-          <div class="flex flex-col items-center justify-between min-w-[100px] p-1">
-            <p class="text-xs" x-text="h.time"></p>
-            <div class="flex flex-1 w-full p-3 items-center justify-center">
-              <img :src="h.icon" class="w-full aspect-square object-contain">
+    <!-- 3hour forecast -->
+    <div class="flex flex-col flex-1 w-full mt-6 pl-1 lg:pl-6 lg:pt-6 text-gray-400 min-h-0">
+      <h2 class="text-xs font-semibold">
+        TODAY'S FORECAST
+      </h2>
+
+      <div class="flex flex-col flex-1 min-h-0" data-simplebar>
+        <div class="flex items-stretch font-semibold py-4 lg:py-8">
+          <template x-for="h in $store.citiesStore.activeCity.forecast_3hour" :key="h.time">
+            <div class="flex flex-col items-center justify-between min-w-[100px] p-1">
+              <p class="text-xs" x-text="h.time"></p>
+              <div class="flex flex-1 w-full p-3 items-center justify-center">
+                <img :src="h.icon" class="w-full aspect-square object-contain">
+              </div>
+              <p class="text-white text-lg font-semibold" x-text="h.feels_like"></p>
             </div>
-            <p class="text-white text-lg font-semibold" x-text="h.feels_like"></p>
-          </div>
-        </template>
+          </template>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Daily forecast -->
-  <div class="flex flex-1 flex-col w-full p-6 text-sm font-semibold border-t border-gray-700 text-gray-400">
-    <h2 class="text-xs mb-2">DAILY FORECAST</h2>
-    <template x-for="d in $store.citiesStore.activeCity.forecast_daily" :key="d.day">
-      <div class="flex items-center p-2">
-        <span class="flex-1 text-xs" x-text="d.day"></span>
-        <div class="flex items-center flex-1 gap-4">
-          <img :src="d.icon" class="size-16">
-          <span class="text-gray-200" x-text="d.main"></span>
+    <!-- Daily forecast -->
+    <div class="flex flex-1 flex-col w-full mt-2 lg:p-6 px-1 text-sm font-semibold lg:border-t border-gray-700 text-gray-400">
+      <h2 class="text-xs mb-2">DAILY FORECAST</h2>
+      <template x-for="d in $store.citiesStore.activeCity.forecast_daily" :key="d.day">
+        <div class="flex items-center py-2">
+          <span class="flex-1 text-xs" x-text="d.day"></span>
+          <div class="flex items-center flex-1 gap-4">
+            <img :src="d.icon" class="size-16">
+            <span class="text-gray-200" x-text="d.main"></span>
+          </div>
+          <span class="flex-1 text-end">
+            <span class="text-gray-300" x-text="d.temp_max"></span> / 
+            <span x-text="d.temp_min"></span>
+          </span>
         </div>
-        <span class="flex-1 text-end">
-          <span class="text-gray-300" x-text="d.temp_max"></span> / 
-          <span x-text="d.temp_min"></span>
-        </span>
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
-</div>
+  {% endif %}
 {% endblock %}

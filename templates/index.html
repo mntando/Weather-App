@@ -5,7 +5,7 @@ Weather50
 {% endblock %}
 
 {% block main %}
-<div class="w-full p-8 flex items-center text-white justify-between">
+<div class="w-full p-2 lg:p-4 flex items-center text-white justify-between">
   <div>
     <h1 id="city" class="text-3xl font-bold case-sentence">{{ city }}</h1>
     <p class="text-gray-400 case-sentence">{{ weather_current.description }}</p>
@@ -20,16 +20,16 @@ Weather50
 </div>
 
 <!-- Hourly forecast -->
-<div class="flex flex-col flex-1 w-full pt-6 pl-6 bg-[#1c2534] text-gray-400 rounded-2xl min-h-0">
+<div class="flex flex-col flex-1 w-full pl-1 lg:pl-6 lg:pt-6 lg:bg-[#1c2534] text-gray-400 rounded-2xl min-h-0 ">
   <h2 class="text-xs font-semibold">
     TODAY'S FORECAST
   </h2>
 
   <div class="flex flex-col flex-1 min-h-0" data-simplebar>
-    <div class="flex items-stretch font-semibold p-4 divide-x divide-gray-700">
+    <div class="flex flex-1 items-stretch font-semibold py-4 lg:py-8 divide-x divide-gray-700">
     {% for item in forecast_hourly %}
       {% if item.type == "hour" %}
-        <div class="flex flex-col items-center justify-between min-w-[100px] p-1 h-full">
+        <div class="flex flex-col items-center justify-between min-w-[100px] h-full">
           <p class="text-xs">{{ item.time }}</p>
           <div class="flex flex-1 w-full p-3 items-center justify-center">
             <img src="{{ item.icon }}" class="w-full aspect-square object-contain" alt="">
@@ -57,14 +57,42 @@ Weather50
     </div>
   </div>
 </div>
+{% endblock %}
 
+<!-- Daily forecast -->
+{% block side %}
+<div class="flex flex-col w-full lg:h-full lg:p-6 px-1 lg:bg-[#1c2534] rounded-2xl text-sm font-semibold text-gray-400">
+  <h2 class="text-xs">
+    DAILY FORECAST
+  </h2>
+  <div class="flex flex-col lg:flex-1 divide-y divide-gray-700">
+    {% for item in forecast_daily %}
+    <div class="flex flex-1 items-center py-2">
+      <span class="flex-1 text-xs">{{ item.day }}</span>
+      
+      <div class="flex items-center flex-1 gap-4">
+        <img src="{{ item.icon }}" class="size-16" alt="weather icon">
+        <span class="text-gray-200 case-sentence">{{ item.main }}</span>
+      </div>
+  
+      <span class="flex-1 text-end">
+        <span class="text-gray-300">{{ item.temp_max }}</span>
+        <span>/{{ item.temp_min }}</span>
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block bottom %}
 <!-- Air condition -->
-<div class="flex flex-col flex-1 min-h-0 w-full mt-3 pt-6 px-6 bg-[#1c2534] text-gray-400 rounded-2xl">
+<div class="flex flex-col lg:flex-1 min-h-0 w-full px-1 lg:pt-6 lg:px-6 lg:bg-[#1c2534] text-gray-400 rounded-2xl">
   <h2 class="text-xs font-semibold">
     AIR CONDITIONS
   </h2>
 
-  <div class="grid grid-cols-1 sm:grid-cols-3 p-6 gap-6">
+  <div class="grid grid-cols-2 sm:grid-cols-3 pt-4 lg:p-6 gap-6">
     <div class="flex flex-row gap-2">
       <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
         <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415"/>
@@ -135,32 +163,6 @@ Weather50
       </div>
     </div>
 
-  </div>
-</div>
-{% endblock %}
-
-<!-- Daily forecast -->
-{% block side %}
-<div class="flex flex-col w-full h-full p-6 bg-[#1c2534] rounded-2xl text-sm font-semibold text-gray-400">
-  <h2 class="text-xs mb-4">
-    7-DAY FORECAST
-  </h2>
-  <div class="flex flex-col flex-1 divide-y divide-gray-700">
-    {% for item in forecast_daily %}
-    <div class="flex flex-1 items-center">
-      <span class="flex-1 text-xs">{{ item.day }}</span>
-      
-      <div class="flex items-center flex-1 gap-4">
-        <img src="{{ item.icon }}" class="size-16" alt="weather icon">
-        <span class="text-gray-200 case-sentence">{{ item.main }}</span>
-      </div>
-  
-      <span class="flex-1 text-end">
-        <span class="text-gray-300">{{ item.temp_max }}</span>
-        <span>/{{ item.temp_min }}</span>
-      </span>
-    </div>
-    {% endfor %}
   </div>
 </div>
 {% endblock %}

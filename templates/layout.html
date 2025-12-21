@@ -22,10 +22,32 @@
     <title>{% block title %}{% endblock %}</title>
 
     {% block scripts %}{% endblock %}
+
   </head>
 
-  <body class="bg-[#0e1621] w-screen h-screen p-4 text-white flex gap-6 lg:overflow-hidden">
-    <aside class="bg-[#1c2534] h-full p-5 flex flex-col text-xs text-gray-500 transition-colors gap-10 rounded-2xl">
+  <body x-data="{ sidebarOpen: false }" class="flex bg-[#0e1621] w-screen p-2 py-4 lg:p-4 text-white flex gap-6 lg:h-screen lg:overflow-hidden">
+
+    <!-- For mobile -->
+    <div x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false" class="fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+
+    <!-- Nav bar -->
+    <aside
+      x-show="sidebarOpen || window.innerWidth >= 1024"
+      x-transition:enter="transition transform duration-300"
+      x-transition:enter-start="-translate-x-full"
+      x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition transform duration-300"
+      x-transition:leave-start="translate-x-0"
+      x-transition:leave-end="-translate-x-full"
+      class="
+        fixed inset-y-0 left-0 z-40
+        bg-[#1c2534]
+        p-5 rounded-r-2xl
+        flex flex-col gap-10
+        text-xs text-gray-500
+        lg:static lg:translate-x-0 lg:rounded-2xl lg:h-full
+      "
+    >
       <button onclick="App.getLocation()" class="flex flex-col items-center mb-5 gap-2 cursor-pointer group transition-colors">
         <img src="/static/weather.webp" alt="logo" class="size-10 object-contain">
       </button>
@@ -57,33 +79,53 @@
       </a>
     </aside>
 
-    <div class="flex flex-row w-full h-full gap-6">
-      <div class="flex flex-col relative w-[60%] rounded-2xl">
-        <form action="/" method="get">
-          <div class="relative w-full">
-            <input id="cityInput" name="city" type="text" placeholder="Search for cities" class="w-full px-4 py-2 pr-12 rounded-lg bg-[#1c2534] text-gray-200 focus:outline-none" autocomplete="off">
-            <button onclick="App.getLocation()" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-700 rounded-full transition">
-              <svg class="size-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+    <div class="grid grid-cols-1 lg:grid-cols-[60%_40%] lg:grid-rows-[auto_1fr] w-full gap-6">
+      <!-- MAIN TOP -->
+      <div class="flex flex-col rounded-2xl lg:col-start-1 lg:row-start-1">
+
+        <div class="flex flex-col gap-4">
+          <!-- Mobile header -->
+          <div class="relative flex items-center lg:hidden">
+            <button @click="sidebarOpen = true" class="absolute left-0 p-2 rounded-lg hover:bg-[#243046]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
             </button>
-          </div>
-          <ul id="cityInputResults" class="absolute top-10 w-full mt-1 bg-[#1c2534] text-gray-200 rounded-lg z-10"></ul>
-        </form>
-  
-        <div class="flex flex-col flex-1 min-h-0">
-          {% block main %}{% endblock %}
-        </div>
-      </div>
-  
-      <div class="w-[40%] flex flex-col flex-1 min-h-0">
-        {% block side %}
-        <aside class="w-full h-full">
-        {% endblock %}
-      </div>
-    </div>
 
+            <span class="w-full text-center uppercase font-semibold text-sm text-gray-400">{{ active }}</span>
+          </div>
+
+          <!-- Search -->
+          <form action="/" method="get" class="relative">
+            <div class="relative">
+              <input id="cityInput" name="city" type="text" placeholder="Search for cities" class="w-full px-4 py-2 pr-12 rounded-lg bg-[#1c2534] text-gray-200 focus:outline-none" autocomplete="off">
+              <button onclick="App.getLocation()" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-700 rounded-full transition">
+                <svg class="size-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </button>
+            </div>
+            <ul id="cityInputResults" class="absolute top-10 w-full mt-1 bg-[#1c2534] text-gray-200 rounded-lg z-10"></ul>
+          </form>
+
+          {% block main %}{% endblock %}
+
+        </div>
+
+      </div>
+
+      <!-- SIDE (spans both rows) -->
+      <div class="flex flex-col min-h-0 lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:pr-6">  <!-- BUG if pr-6 is removed ¯\_(ツ)_/¯ -->
+        {% block side %}{% endblock %}
+      </div>
+
+      <!-- MAIN BOTTOM -->
+      <div class="flex flex-col min-h-0 lg:col-start-1 lg:row-start-2">
+        {% block bottom %}{% endblock %}
+      </div>
+
+    </div>
     <script defer>
       App.initCitySearch();
     </script>

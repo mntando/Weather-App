@@ -99,22 +99,37 @@ const App = (() => {
 
 	// Get user's location and redirect to weather page
 	function getLocation() {
-		const options = {enableHighAccuracy: false, timeout: 5000, maximumAge: 0};
+		// Check if geolocation is supported
+		if (!navigator.geolocation) {
+			console.error('Geolocation not supported');
+			return;
+		}
+
+		const options = {
+			enableHighAccuracy: true,
+			timeout: 10000, // Increased timeout
+			maximumAge: 300000 // Cache position for 5 min
+		};
 		
 		function success(pos) {
 			const crd = pos.coords;
-			async function weather() {
-				// Redirect to weather page
-				window.location.href = '/?lat=' + crd.latitude + '&lon=' + crd.longitude;
-			}
-			weather();
+			window.location.href = `/?lat=${crd.latitude}&lon=${crd.longitude}`;
 		}
 		
 		function error(err) {
 			console.warn(`ERROR(${err.code}): ${err.message}`);
+			
+			// Handle specific errors
+			if (err.code === 1) {
+				alert('Location permission denied');
+			} else if (err.code === 2) {
+				alert('Location unavailable');
+			} else if (err.code === 3) {
+				alert('Location request timeout');
+			}
 		}
 		
-		navigator.geolocation.getCurrentPosition(success, error, options); 
+		navigator.geolocation.getCurrentPosition(success, error, options);
 	}
 
 	// Public API
