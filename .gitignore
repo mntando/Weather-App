@@ -160,9 +160,6 @@ Thumbs.db
 # Databases
 *.db
 
-# Other
-*.svg
-
 # Development files
 run.py
 project.txt
