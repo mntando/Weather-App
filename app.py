@@ -17,7 +17,7 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 api_key = "0ef451aa617998b929aa1e094b1f157d"
 
 # Configure SQLite database
-DB_PATH = "instance/cities.db"  # adjust path if needed
+DB_PATH = "data/cities.db"  # adjust path if needed
 
 # Cache handling
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})  # Use 'redis' for production

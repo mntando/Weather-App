@@ -8,7 +8,7 @@ import sqlite3
 # Paths
 # -----------------------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_DIR = os.path.join(BASE_DIR, "instance")
+DB_DIR = os.path.join(BASE_DIR, "data")
 DB_PATH = os.path.join(DB_DIR, "cities.db")
 
 SCHEMA_PATH = os.path.join(BASE_DIR, "db", "schema.sql")
@@ -16,7 +16,7 @@ COUNTRIES_PATH = os.path.join(BASE_DIR, "db", "countries.json")
 CITIES_PATH = os.path.join(BASE_DIR, "db", "city.list.json.gz")
 
 # -----------------------------
-# Ensure instance/ and DB exist
+# Ensure data/ and DB exist
 # -----------------------------
 os.makedirs(DB_DIR, exist_ok=True)
 
@@ -81,6 +81,6 @@ with gzip.open(CITIES_PATH, "rt", encoding="utf-8") as f:
 
 conn.commit()
 print(f"Inserted {total} cities")
-print("Build complete: instance/cities.db")
+print("Build complete: data/cities.db")
 
 conn.close()
