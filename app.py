@@ -8,7 +8,7 @@ from helpers import update_session, build_current_weather, build_hourly_forecast
 
 # Configure application
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24).hex())
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
