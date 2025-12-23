@@ -48,7 +48,7 @@ def update_session(city=None, units=None):
         if "cities" not in session:
             session["cities"] = []
 
-        # Remove city if already in list (match by coordinates, not just name)
+        # Remove city if already in list (match by coordinates)
         session["cities"] = [
             c for c in session["cities"]
             if not (
@@ -64,8 +64,8 @@ def update_session(city=None, units=None):
             "lon": city.get("lon")
         })
 
-        # Keep only 5 most recent
-        session["cities"] = session["cities"][:4]
+        # Keep only 3 most recent
+        session["cities"] = session["cities"][:3]
 
         session.modified = True
 

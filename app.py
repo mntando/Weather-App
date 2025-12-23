@@ -1,15 +1,14 @@
 import os
 import requests
-from cs50 import SQL
 from flask import Flask, jsonify, render_template, request, session
 from flask_caching import Cache
+import sqlite3
 
 from helpers import update_session, build_current_weather, build_hourly_forecast, build_daily_forecast
 
 # Configure application
 app = Flask(__name__)
-dev_secret_key = os.urandom(24)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", dev_secret_key)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -17,8 +16,8 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 # Openweathermap API key (https://openweathermap.org/api)
 api_key = "0ef451aa617998b929aa1e094b1f157d"
 
-# Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///cities.db")
+# Configure SQLite database
+DB_PATH = "instance/cities.db"  # adjust path if needed
 
 # Cache handling
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})  # Use 'redis' for production
@@ -345,9 +344,9 @@ def city_search():
     city = request.args.get("city", "").strip()
     if not city:
         return jsonify([])
-    
+
     limit = 10
-    results = db.execute("""
+    query = """
         SELECT
             cities.name,
             cities.lat,
@@ -361,8 +360,17 @@ def city_search():
             LENGTH(cities.name) ASC,
             cities.name ASC
         LIMIT ?
-    """, f"{city}%", limit)
+    """
 
+    # Use sqlite3 connection
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row  # so we can access columns by name
+    cur = conn.cursor()
+    cur.execute(query, (f"{city}%", limit))
+    rows = cur.fetchall()
+    conn.close()
+
+    # Convert to list of dicts for JSON
     return jsonify([
         {
             "name": row["name"],
@@ -371,5 +379,6 @@ def city_search():
             "state": row["state"],
             "country": row["country"]
         }
-        for row in results
+        for row in rows
     ])
+
