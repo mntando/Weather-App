@@ -7,14 +7,14 @@ It provides current weather conditions and forecasts for major cities worldwide 
 
 ### Screenshots
 <div style="display: flex; overflow-x: auto; gap: 10px; padding: 10px;">
-  <img src="static/screenshots/Screenshot-1.png" style="width: 300px; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
-  <img src="static/screenshots/Screenshot-2.png" style="width: 300px; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
+  <img src="static/screenshots/Screenshot-1.png" style="width: 540px; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
+  <img src="static/screenshots/Screenshot-2.png" style="width: 540px; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px;">
 </div>
 
 <div style="display: flex; overflow-x: auto; gap: 10px; padding: 10px;">
-  <img src="static/screenshots/Screenshot-6.jpg" style="width: 150px; aspect-ratio: 9/16; border-radius: 12px;">
-  <img src="static/screenshots/Screenshot-8.jpg" style="width: 150px; aspect-ratio: 9/16; border-radius: 12px;">
-  <img src="static/screenshots/Screenshot-7.jpg" style="width: 150px; aspect-ratio: 9/16; border-radius: 12px;">
+  <img src="static/screenshots/Screenshot-6.jpg" style="width: 200px; aspect-ratio: 9/16; border-radius: 12px;">
+  <img src="static/screenshots/Screenshot-8.jpg" style="width: 200px; aspect-ratio: 9/16; border-radius: 12px;">
+  <img src="static/screenshots/Screenshot-7.jpg" style="width: 200px; aspect-ratio: 9/16; border-radius: 12px;">
 </div>
 
 ---
